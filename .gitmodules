@@ -1,3 +1,6 @@
 [submodule "master/master/learning-chess-blindfolded"]
 	path = master/master/learning-chess-blindfolded
 	url = https://github.com/shtoshni92/learning-chess-blindfolded.git
+[submodule "master/code/learning-chess-blindfolded"]
+	path = master/code/learning-chess-blindfolded
+	url = https://github.com/shtoshni92/learning-chess-blindfolded.git

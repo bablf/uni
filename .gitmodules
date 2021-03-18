@@ -4,3 +4,6 @@
 [submodule "master/code/learning-chess-blindfolded"]
 	path = master/code/learning-chess-blindfolded
 	url = https://github.com/shtoshni92/learning-chess-blindfolded.git
+[submodule "clustering_langer"]
+	path = clustering_langer
+	url = https://github.com/zumgruenenbaum/clustering_langer.git

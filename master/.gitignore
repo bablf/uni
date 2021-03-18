@@ -4,4 +4,3 @@ code/feldman_gpt2/db/
 code/feldman_gpt2/model/chess_modelpytorch_model.bin
 code/noever_gpt2_checkpoint_huggingface_compatible/pytorch_model.bin
 master/code/feldman_gpt2/model/chess_model/pytorch_model.bin
-master/code/feldman_gpt2/model/chess_model/pytorch_model.bin

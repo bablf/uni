@@ -85,7 +85,7 @@ Dieser Unterabschnitt erscheint nicht im Inhaltsverzeichnis.
 Blabla.
 \newpage
 
-\chapter{What are Probing Classifiers}
+\chapter{Introduction to Chess}
 \section{Mehr Beispiele}
 \chapter{What is Language Modeling}
 State of the art LM.
@@ -100,16 +100,27 @@ Pretrained Models:
 Nur Blindfolded Paper -
 
 Finetuned GPT2 Models:
-1. kann GPT auf UCI/PGN Daten finetunen (10\% mistakes according to chess transformer paper aka Noever)
+1. GPT auf PGN Daten finetunen (10\% mistakes according to chess transformer paper aka Noever)
+2. GPT auf UCI Daten finetuned (selfbuild)
 2. kann GPT auf konvertierten PGN daten trainieren (um Feldman Paper nachzuahmen)
 
 Comparison
+\chapter{Datapreprocessing}
+Kingbase und milibrary combined. Kingbase converted with awk command:
+\begin{verbatim}
+`awk '{split($0,a,"] ");print a[3]"]";print a[2]"]";print a[1]"]";print "";print a[4]; print "";}'
+\end{verbatim}
+
+
 \chapter{Introduction to Probing Methods}
 problems with probing classifiers? Is this a legitimate way of checking if the model has learnded anything about the real world.
 
 Learning probing with extracted hidden state
 Few/one/zero shot training.
 \chapter{Introduction to Probing Classifiers}
+\chapter{Introduction to the task}
+What I want to present? Generall research question. Not "how do transformers learn".
+more like "do transformers learn this?" Is this information in the hidden state
 
 
 \chapter{Results of Probing Classifiers}

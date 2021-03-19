@@ -2,7 +2,7 @@
 Autor: Florian Babl
 Thema: Probing World Knowledge of Transformer Language Models: A Case Study on Chess
 
-Können finetuned model von Noever aka Chess transfomers nutzen.
+Model from Noever aka Chess transfomers.
 
 Todo:
     - What was the medium model trained on? Which parameters were used
@@ -24,7 +24,6 @@ config = GPT2Config.from_json_file("noever_gpt2_checkpoint_huggingface_compatibl
 config.output_hidden_states = True
 model = GPT2Model.from_pretrained("checkpoint/run1/model-1000.index", from_tf=True, config=config)
 tokenizer = GPT2Tokenizer("checkpoint/run1/encoder.json", "checkpoint/run1/vocab.bpe")  # the regular gpt2 tokenizer
-tokenizer2 = PreTrainedTokenizer.from_pretrained("shtoshni/gpt2-chess-uci")
 
 if __name__ == "__main__":
     pass

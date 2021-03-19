@@ -12,6 +12,7 @@ Brauche sowohl PGN als auch UCI notation um 2 Modelle zu trainieren und sie mite
 
 Todo:
     1. Download
+    2. welches format müssen daten haben
     2. Convert to UCI with python chess or similar
 
 KingBase5dataset of 2.19 million PGN
@@ -19,13 +20,13 @@ gsutil cp gs://gpt-2-poetry/data/kingbase-ftfy.txt
 https://www.milibrary.org/
 """
 
-import pickle
+import argparse
 import chess.pgn as pgn
 
-def read_games():
-    source_file = open("data/kingbase_milibrary.PGN")  # open kingbase and milibrary in pgn
-    output_file = open("data/uci_dataset.bin", 'wba')
-    uci_dataset = []  # ["GAMESTRING-IN-UCI"]
+
+def read_games(verbose, split_uci):
+    source_file = open("data/2005.pgn")  # Todo : open kingbase and milibrary in pgn
+    output_file = open("data/uci_dataset.txt", 'w')
     game_number = 0
 
     while True:
@@ -33,42 +34,38 @@ def read_games():
             game = pgn.read_game(source_file)
             if game is None:  # if last game
                 break
-            board = game.board()
+            board = game.board()  # create board state
             pgn_movelist = game.mainline_moves()
             uci_movelist = []
             for move in pgn_movelist:  # convert each game to uci with python chess
-                uci_movelist.append(board.uci(move))
-            uci_dataset.append(uci_movelist)
+                if split_uci:
+                    uci = board.uci(move)
+                    uci_movelist.append(uci[:2])
+                    uci_movelist.append(uci[2:])
+                else:
+                    uci_movelist.append(board.uci(move))
             game_number += 1
+            # TODO check output
+            output_file.write('[Result "'+game.headers["Result"] + '"] ' + ' '.join(uci_movelist)+"\n")  # save to file
+            if verbose:
+                print('[Result "'+game.headers["Result"] + '"] ' + ' '.join(uci_movelist)+"\n", end='')
+                if game_number % 1e4 == 0:  # print progress
+                    print(f"{game_number} games processed")
 
-            if game_number % 1e4 == 0:
-                print(f"{game_number} games processed")
-                pickle.dump(uci_dataset, output_file)  # save so uci_dataset does not get to big
-                uci_dataset = []
-
-        except (ValueError, UnicodeDecodeError) as e:
+        except (ValueError, UnicodeDecodeError) as e:  # if error
             break
 
-    pickle.dump(uci_dataset, output_file)
     output_file.close()
+
 
 def read_dataset():
     f = open("data/uci_dataset.bin", "rb")
-    dataset = pickle.load(f)
-    print(len(dataset))
+
 
 if __name__ == "__main__":
-    read_dataset()
-    #read_games()
-
-
-
-
-
-
-
-
-
-
-
-
+    #read_dataset()
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--verbose', default=False, type=bool)
+    parser.add_argument('--split_uci', default=False, type=bool, help='split uci into e2 e4')
+    args = parser.parse_args()
+    read_games(args.verbose, args.split_uci)

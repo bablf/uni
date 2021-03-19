@@ -36,7 +36,7 @@ import chess.pgn as pgn
 import pickle
 
 
-def read_games():
+def create_dataset():
     source_file = open("data/MillionBase/millionbase-2.5.pgn")  # open millionbase in pgn
     output_file = open("data/pgn_uci_2_board.bin", 'wb')
     pgn_uci_2_board = dict()  # {["GAMESTRING-IN-PGN", "GAMESTRING-IN-UCI"]: RESULTING-CHESS-BOARD}
@@ -62,6 +62,6 @@ def read_games():
     output_file.close()
 
 if __name__ == "__main__":
-    read_games()
+    create_dataset()
 
 

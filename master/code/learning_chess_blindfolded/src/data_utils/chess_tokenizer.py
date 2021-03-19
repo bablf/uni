@@ -1,7 +1,7 @@
 import re
 import os
 from collections import OrderedDict
-from constants import NOTATION_TO_REGEX
+from learning_chess_blindfolded.src.constants import NOTATION_TO_REGEX
 from transformers import PreTrainedTokenizer
 
 

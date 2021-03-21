@@ -39,9 +39,9 @@ import pickle
 def create_dataset():
     source_file = open("data/MillionBase/millionbase-2.5.pgn")  # open millionbase in pgn
     output_file = open("data/pgn_uci_2_board.bin", 'wb')
-    pgn_uci_2_board = dict()  # {["GAMESTRING-IN-PGN", "GAMESTRING-IN-UCI"]: RESULTING-CHESS-BOARD}
+    pgn_uci_2_board = []  # ("GAMESTRING-IN-PGN", "GAMESTRING-IN-UCI", RESULTING-CHESS-BOARD)
     game_number = 0
-    while True:
+    while game_number < 1e6:  # 1 Mil games should be enough
         try:
             game = pgn.read_game(source_file)
             board = game.board()
@@ -50,16 +50,22 @@ def create_dataset():
             pgn_movelist = game.mainline_moves()
             print(pgn_movelist)
             uci_movelist = []
-            for move in pgn_movelist: # # convert each game to uci with python chess
+            for move in pgn_movelist:  # convert each game to uci with python chess
+
                 uci_movelist.append(board.uci(move))
                 board.push(move)
-            pgn_uci_2_board[game_number] = (pgn_movelist, uci_movelist, board) # Todo: convert board to format I need
+                board = convert_board(board)  # Todo: convert board to format I need
+            pgn_uci_2_board[game_number] = (str(pgn_movelist), ' '.join(uci_movelist), board)
             game_number += 1
         except (ValueError, UnicodeDecodeError) as e:
             pass
 
     pickle.dump(pgn_uci_2_board, output_file)
     output_file.close()
+
+def convert_board(board):
+    # todo
+    return board
 
 if __name__ == "__main__":
     create_dataset()

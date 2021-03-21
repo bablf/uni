@@ -9,8 +9,10 @@ class PgnGPT:
     checkpoint downloaded from rb.gy/dsdphc
     """
     config = GPT2Config.from_json_file("noever_gpt2_checkpoint_huggingface_compatible/config.json")
+    config.output_hidden_states = True
     model = GPT2Model.from_pretrained("checkpoint/run1/model-1000.index", from_tf=True, config=config)
     tokenizer = GPT2Tokenizer("checkpoint/run1/encoder.json", "checkpoint/run1/vocab.bpe")
+    notation = "pgn"
     #config.output_hidden_states = True
 
 
@@ -21,8 +23,10 @@ class UciGPT:
     See file uic_gpt2.py
     """
     config = GPT2Config.from_json_file("babl_gpt2_checkpoint_huggingface_compatible/config.json")
+    config.output_hidden_states = True
     model = GPT2Model.from_pretrained("checkpoint2/run1/model-1000.index", from_tf=True, config=config)
     tokenizer = GPT2Tokenizer("checkpoint2/run1/encoder.json", "checkpoint2/run1/vocab.bpe")
+    notation = "uci"
 
 
 class PretrainedGPT:
@@ -31,9 +35,12 @@ class PretrainedGPT:
     Model is downloaded and not further finetuned from huggingface (shtoshni/gpt2-chess-uci)
     I use his custom ChessTokenizer from his github:
     """
+    config = GPT2Config.from_pretrained("shtoshni/gpt2-chess-uci")
+    config.output_hidden_states = True
     model = GPT2LMHeadModel.from_pretrained("shtoshni/gpt2-chess-uci")
     vocab_file = "learning_chess_blindfolded/sample_data/lm_chess/vocab/uci/vocab.txt"
     tokenizer = ChessTokenizer(vocab_file, notation='uci', pad_token="<pad>", bos_token="<s>", eos_token="</s>")
+    notation = "uci"
 
 class SpecialGPT:
     """
@@ -42,5 +49,7 @@ class SpecialGPT:
     Model is not available online as of now (19.3.21). He provided his whole project (see feldman_gpt2 folder)
     """
     config = GPT2Config.from_json_file("feldman_gpt2/model/chess_model/config.json")
+    config.output_hidden_states = True
     model = GPT2LMHeadModel.from_pretrained("feldman_gpt2/model/chess_model/pytorch_model.bin", config=config)
     tokenizer = GPT2Tokenizer.from_pretrained("feldman_gpt2/model/chess_model/")
+    notation = "pgn"

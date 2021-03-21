@@ -58,13 +58,8 @@ def read_games(verbose, split_uci):
     output_file.close()
 
 
-def read_dataset():
-    f = open("data/uci_dataset.bin", "rb")
-
-
 if __name__ == "__main__":
-    #read_dataset()
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Create UCI Dataset by Parsing PGN notation.')
     parser.add_argument('--verbose', default=False, type=bool)
     parser.add_argument('--split_uci', default=False, type=bool, help='split uci into e2 e4')
     args = parser.parse_args()

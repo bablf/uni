@@ -11,7 +11,6 @@ GPT Version: GPT2Model or GPT2LMHeadModel
 from transformers import GPT2Model, GPT2Tokenizer, GPT2LMHeadModel, Trainer, TrainingArguments
 import gpt_2_simple as gpt2
 import os
-import requests
 
 model_name = "355M"
 if not os.path.isdir(os.path.join("models", model_name)):

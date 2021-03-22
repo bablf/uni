@@ -25,7 +25,7 @@ import chess.pgn as pgn
 
 
 def read_games(verbose, split_uci):
-    source_file = open("data/2005.pgn")  # Todo : open kingbase and milibrary in pgn
+    source_file = open("data/kingbase_milibrary.PGN")
     output_file = open("data/uci_dataset.txt", 'w')
     game_number = 0
 
@@ -38,17 +38,16 @@ def read_games(verbose, split_uci):
             pgn_movelist = game.mainline_moves()
             uci_movelist = []
             for move in pgn_movelist:  # convert each game to uci with python chess
-                if split_uci:
+                if split_uci:  # Maybe used down the line to check other Encoding format
                     uci = board.uci(move)
                     uci_movelist.append(uci[:2])
                     uci_movelist.append(uci[2:])
                 else:
                     uci_movelist.append(board.uci(move))
             game_number += 1
-            # TODO check output
             output_file.write('[Result "'+game.headers["Result"] + '"] ' + ' '.join(uci_movelist)+"\n")  # save to file
             if verbose:
-                print('[Result "'+game.headers["Result"] + '"] ' + ' '.join(uci_movelist)+"\n", end='')
+                # print('[Result "'+game.headers["Result"] + '"] ' + ' '.join(uci_movelist)+"\n", end='')
                 if game_number % 1e4 == 0:  # print progress
                     print(f"{game_number} games processed")
 
@@ -60,7 +59,7 @@ def read_games(verbose, split_uci):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create UCI Dataset by Parsing PGN notation.')
-    parser.add_argument('--verbose', default=False, type=bool)
+    parser.add_argument('--verbose', default=True, type=bool)
     parser.add_argument('--split_uci', default=False, type=bool, help='split uci into e2 e4')
     args = parser.parse_args()
     read_games(args.verbose, args.split_uci)

@@ -1,4 +1,4 @@
-from transformers import GPT2Config,GPT2LMHeadModel, GPT2Model, GPT2Tokenizer
+from transformers import GPT2Config, GPT2LMHeadModel, GPT2Model, GPT2Tokenizer
 from learning_chess_blindfolded.src.data_utils.chess_tokenizer import ChessTokenizer
 
 
@@ -9,24 +9,28 @@ class PgnGPT:
     checkpoint downloaded from rb.gy/dsdphc
     """
     config = GPT2Config.from_json_file("noever_gpt2_checkpoint_huggingface_compatible/config.json")
+    # config.output_hidden_states = True
+    # Don't use upper config. Has no LMHead. Other Param. are the same to gpt2
     config.output_hidden_states = True
-    model = GPT2Model.from_pretrained("checkpoint/run1/model-1000.index", from_tf=True, config=config)
-    tokenizer = GPT2Tokenizer("checkpoint/run1/encoder.json", "checkpoint/run1/vocab.bpe")
+    print(config)
+    model = GPT2Model.from_pretrained("pgn_checkpoint/run1/model-1000.index", from_tf=True, config=config)
+    tokenizer = GPT2Tokenizer("pgn_checkpoint/run1/encoder.json", "pgn_checkpoint/run1/vocab.bpe")
     notation = "pgn"
-    #config.output_hidden_states = True
+    name = "PgnGPT"
 
 
-class UciGPT:
-    """
-    Todo : to be finetuned
-    This is a, on UCI notation finetuned, GPT-2 Model with the help of gpt-2-simple.
-    See file uic_gpt2.py
-    """
-    config = GPT2Config.from_json_file("babl_gpt2_checkpoint_huggingface_compatible/config.json")
-    config.output_hidden_states = True
-    model = GPT2Model.from_pretrained("checkpoint2/run1/model-1000.index", from_tf=True, config=config)
-    tokenizer = GPT2Tokenizer("checkpoint2/run1/encoder.json", "checkpoint2/run1/vocab.bpe")
-    notation = "uci"
+# class UciGPT:
+#     """
+#     Todo : to be finetuned
+#     This is a, on UCI notation finetuned, GPT-2 Model with the help of gpt-2-simple.
+#     See file uic_gpt2.py
+#     """
+#     config = GPT2Config.from_json_file("babl_gpt2_checkpoint_huggingface_compatible/config.json")
+#     config.output_hidden_states = True
+#     model = GPT2Model.from_pretrained("checkpoint2/run1/model-1000.index", from_tf=True, config=config)
+#     tokenizer = GPT2Tokenizer("checkpoint2/run1/encoder.json", "checkpoint2/run1/vocab.bpe")
+#     name = "UciGPT"
+#     notation = "uci"
 
 
 class PretrainedGPT:
@@ -41,6 +45,7 @@ class PretrainedGPT:
     vocab_file = "learning_chess_blindfolded/sample_data/lm_chess/vocab/uci/vocab.txt"
     tokenizer = ChessTokenizer(vocab_file, notation='uci', pad_token="<pad>", bos_token="<s>", eos_token="</s>")
     notation = "uci"
+    name = "PretrainedGPT"
 
 class SpecialGPT:
     """
@@ -53,3 +58,4 @@ class SpecialGPT:
     model = GPT2LMHeadModel.from_pretrained("feldman_gpt2/model/chess_model/pytorch_model.bin", config=config)
     tokenizer = GPT2Tokenizer.from_pretrained("feldman_gpt2/model/chess_model/")
     notation = "pgn"
+    name = "SpecialGPT"

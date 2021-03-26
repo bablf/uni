@@ -2,21 +2,10 @@
 Autor: Florian Babl
 Thema: Probing World Knowledge of Transformer Language Models: A Case Study on Chess
 
-Hier soll ein pgn datensatz extrahiert werden, der für beide finetuning modelle genutzt werden soll.
-Dataset sollte so 10k - 30k Spiele beinhalten.
-Fragen:
-- Welche Qualität sollen die Spiele haben?
-Vergleichbare Spiele, wie Noever aka Chess transformer um vergleichbarkeit zw. PGN und UCI zu haben
-Brauche sowohl PGN als auch UCI notation um 2 Modelle zu trainieren und sie miteinander zu vergleichen.
-- Brauche eigentlich nur UCI Daten, mit denen gpt-2 gefinetuned wird. Noever aka Chess Transformer hat ein gefinetuntes Modell für pgn
+PGN Dataset is being extracted and converted into UCI notation
+Includes the same chess games as "Chess Tranformer" paper from the milibrary and kingbase dataset
 
-Todo:
-    1. Download
-    2. welches format müssen daten haben
-    2. Convert to UCI with python chess or similar
-
-KingBase5dataset of 2.19 million PGN
-gsutil cp gs://gpt-2-poetry/data/kingbase-ftfy.txt
+KingBase5dataset of 2.19 million PGN gsutil cp gs://gpt-2-poetry/data/kingbase-ftfy.txt
 https://www.milibrary.org/
 """
 
@@ -25,8 +14,8 @@ import chess.pgn as pgn
 
 
 def read_games(verbose, split_uci):
-    source_file = open("data/kingbase_milibrary.PGN")
-    output_file = open("data/uci_dataset.txt", 'w')
+    source_file = open("data/kingbase_milibrary.PGN") # Data was combined before with shell.
+    output_file = open("data/uci_dataset_with_tags.txt", 'w')
     game_number = 0
 
     while True:
@@ -45,7 +34,9 @@ def read_games(verbose, split_uci):
                 else:
                     uci_movelist.append(board.uci(move))
             game_number += 1
-            output_file.write('[Result "'+game.headers["Result"] + '"] ' + ' '.join(uci_movelist)+"\n")  # save to file
+            # Write UCI to file, add EOS and BOS tags and [Result "1-0"] as stated in Chesstransformer paper
+            output_file.write('<|startoftext|>[Result "'+game.headers["Result"] + '"] ' +
+                              ' '.join(uci_movelist)+"<|endoftext|>"+"\n")  # save to file
             if verbose:
                 # print('[Result "'+game.headers["Result"] + '"] ' + ' '.join(uci_movelist)+"\n", end='')
                 if game_number % 1e4 == 0:  # print progress
@@ -57,6 +48,25 @@ def read_games(verbose, split_uci):
     output_file.close()
 
 
+
+from gpt_2_simple.gpt_2 import encode_plain_dataset
+path_to_txt_file = "data/uci_dataset_with_tags.txt"
+out_path = "data/uci_dataset_with_tags.npz"
+model_name = "355M"
+
+"""
+# Method only exists in Forklab: pip install -e git+https://github.com/ForkLab/gpt-2-simple.git@dev#egg=gpt-2-simple 
+Needed because file is to big to just use fine_tune
+From Function description: 
+Memory efficient encoder single plaint text document into compressed chunks.
+For Python 3.6 only now (https://github.com/numpy/numpy/blob/1e623f8/numpy/lib/npyio.py#L745)
+And need correct content inside plain text document with '<|startoftext|>' and '<|endoftext|>' in each line
+"""
+encode_plain_dataset(path_to_txt_file,
+                     out_path=out_path,
+                     model_name=model_name)
+
+# Finetuning in Google Colab: https://colab.research.google.com/drive/1HOEoLo16CuiPe6iTSs5rV1Kf538uKRpd?usp=sharing
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create UCI Dataset by Parsing PGN notation.')
     parser.add_argument('--verbose', default=True, type=bool)

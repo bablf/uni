@@ -7,3 +7,4 @@ master/code/feldman_gpt2/model/chess_model/pytorch_model.bin
 code/models/
 code/pgn_checkpoint/run1/model-1000.data-00000-of-00001
 code/pgn_checkpoint/run1/model-1000.index
+master/code/__pycache__/

@@ -14,7 +14,7 @@ import chess.pgn as pgn
 
 
 def read_games(verbose, split_uci):
-    source_file = open("data/2005.pgn") # Data was combined before with shell.
+    source_file = open("data/2005.pgn")  # Todo change to kingbase_milibrary
     output_file = open("data/pgn_dataset_with_tags.txt", 'w')
     game_number = 0
 

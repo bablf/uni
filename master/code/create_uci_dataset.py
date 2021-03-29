@@ -62,6 +62,7 @@ Memory efficient encoder single plaint text document into compressed chunks.
 For Python 3.6 only now (https://github.com/numpy/numpy/blob/1e623f8/numpy/lib/npyio.py#L745)
 And need correct content inside plain text document with '<|startoftext|>' and '<|endoftext|>' in each line
 """
+
 encode_plain_dataset(path_to_txt_file,
                      out_path=out_path,
                      model_name=model_name)

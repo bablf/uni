@@ -9,28 +9,31 @@ class PgnGPT:
     checkpoint downloaded from rb.gy/dsdphc
     """
     config = GPT2Config.from_json_file("noever_gpt2_checkpoint_huggingface_compatible/config.json")
+    #config = GPT2Config.from_pretrained("gpt2-medium")
+
     # config.output_hidden_states = True
     # Don't use upper config. Has no LMHead. Other Param. are the same to gpt2
+    # config.output_hidden_states = True
+    # print(config)
+    # model = GPT2Model.from_pretrained("pgn_checkpoint/run1/model-1000.index", from_tf=True, config=config)
+    # tokenizer = GPT2Tokenizer("pgn_checkpoint/run1/encoder.json", "pgn_checkpoint/run1/vocab.bpe")
+    # notation = "pgn"
+    # name = "PgnGPT"
+
+
+class UciGPT:
+    """
+    This is a, on UCI notation finetuned, GPT-2 Model with the help of gpt-2-simple.
+    See file uic_gpt2.py
+    """
+    config = GPT2Config.from_pretrained("gpt2-medium")
     config.output_hidden_states = True
-    print(config)
-    model = GPT2Model.from_pretrained("pgn_checkpoint/run1/model-1000.index", from_tf=True, config=config)
-    tokenizer = GPT2Tokenizer("pgn_checkpoint/run1/encoder.json", "pgn_checkpoint/run1/vocab.bpe")
-    notation = "pgn"
-    name = "PgnGPT"
-
-
-# class UciGPT:
-#     """
-#     Todo : to be finetuned
-#     This is a, on UCI notation finetuned, GPT-2 Model with the help of gpt-2-simple.
-#     See file uic_gpt2.py
-#     """
-#     config = GPT2Config.from_json_file("babl_gpt2_checkpoint_huggingface_compatible/config.json")
-#     config.output_hidden_states = True
-#     model = GPT2Model.from_pretrained("checkpoint2/run1/model-1000.index", from_tf=True, config=config)
-#     tokenizer = GPT2Tokenizer("checkpoint2/run1/encoder.json", "checkpoint2/run1/vocab.bpe")
-#     name = "UciGPT"
-#     notation = "uci"
+    model = GPT2Model.from_pretrained("uci_checkpoint/run1/model-18500.index", from_tf=True, config=config)
+    tokenizer = GPT2Tokenizer("uci_checkpoint/run1/encoder.json", "uci_checkpoint/run1/vocab.bpe")
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "left"
+    name = "UciGPT"
+    notation = "uci"
 
 
 class PretrainedGPT:

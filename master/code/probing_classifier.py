@@ -5,32 +5,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class ProbingChess(nn.Module):
-    def __init__(self):
+    def __init__(self, dim_hidden_states, max_seq_length):
         super().__init__()
         # layers of the model # todo define layers
         self.l1 = nn.Linear(dim_hidden_states, 13)  # X dim x Y x Z ==> 8x8x13
-        self.softmax = nn.Softmax() # Softmax nicht möglich. 8x8x13 und über 64 Positionen jeweils softmax bildet
-        self.flat = nn.Flatten()
-        # 1 0 0 0 0 0 0 0 1
-        # 0 1 0 0 0 0 0 0 1    # 500
-        # ich habe hunger.        ==> positiver / negativ
+        self.l2 = nn.Linear(max_seq_length, 64)
+        self.softmax = nn.Softmax()
+
     def forward(self, x):
         # one forward pass
-        out = self.flat(x) # todo define layer structure
-        out = F.relu(self.l1(out))
+        out = self.l1(x) # todo define layer structure
+        print(torch.transpose(out, 1, 2).shape)
         out = self.l2(out)
+        print(out)
         return out
-
-    def training_step(self, batch):
-        hidden_states, chessboard = batch
-        out = self(hidden_states)
-        loss = F.cross_entropy(out, chessboard)
-        return loss
-
-    def validation_step(self, batch):
-        hidden_states, chessboard = batch
-        out = self(hidden_states)
-        loss = F.cross_entropy(out, chessboard)
-        _, pred = torch.max(out, 1)  # todo?
-        accuracy = torch.tensor(torch.sum(pred == chessboard).item() / len(pred))
-        return [loss.detach(), accuracy.detach()]

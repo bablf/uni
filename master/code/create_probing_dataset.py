@@ -51,41 +51,51 @@ import random
 import math
 from tqdm import tqdm
 
+
 def create_dataset():
-    source_file = open("data/millionbase.pgn", encoding='cp1252')  # open millionbase in pgn
-    output_file = open("data/probing_dataset.txt", 'wb')
-    pgn_uci_2_board = []  # ("GAMESTRING-IN-PGN", "GAMESTRING-IN-UCI", RESULTING-CHESS-BOARD)
+    source_file = open("data/2005.pgn", encoding='cp1252')  # open millionbase in pgn # todo change to millionbase
+    output_file = open("data/probing_dataset.txt", 'w')
     game_number = 0
-    lines = ""
+    max_length = 0
     pbar = tqdm(total=5e5)
     while game_number < 5e5:  # 500k games should be enough
         try:
             game = pgn.read_game(source_file)
-            board = game.board()
             if game is None:  # if last game
                 break
+            board = game.board()
             uci_move_list = []
-            split_game = random.randint(0, len(list(game.mainline()))-1)
+            split_game = random.randint(0, len(list(game.mainline())) - 1)
+
             for i, move in enumerate(game.mainline_moves()):  # convert each game to uci with python chess
                 if i == split_game:  # stop at random point in pgn notation
                     break
                 uci_move_list.append(board.uci(move))
                 board.push(move)
-            split_game += math.ceil(split_game/2)
-            pgn_move_list = ' '.join(str(game.mainline()).split()[:split_game])  # cut part of the pgn notation. so that it is equal to uci
-            # print(uci_move_list)
-            # print(pgn_move_list)
+            split_game += math.ceil(split_game / 2)
+            # cut part of the pgn notation. so that it is equal to uci
+            pgn_move_list = ' '.join(str(game.mainline()).split()[:split_game])
+            pgn_move_list = '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' + pgn_move_list
+            uci_move_list = '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' + ' '.join(uci_move_list)
+            if split_game > max_length:
+                max_length = split_game
+                max_length_pgn_file = open("data/max_length_pgn.txt", "w")
+                max_length_uci_file = open("data/max_length_uci.txt", "w")
+                max_length_uci_file.write(uci_move_list)
+                max_length_pgn_file.write(pgn_move_list)
+                max_length_pgn_file.close()
+                max_length_uci_file.close()
+
             board = convert_board(board)  # convert board to format I need
-            pgn_uci_2_board.append((pgn_move_list, ' '.join(uci_move_list), board))
+            output_file.write(pgn_move_list + ";" + uci_move_list + ";" + str(board[1:-1]).replace("\n", "") + "\n")
             game_number += 1
 
             if game_number % 1e4 == 0:  # print progress
                 pbar.update(1e4)
         except (ValueError, UnicodeDecodeError) as e:
             pass
-
-    pickle.dump(pgn_uci_2_board, output_file)
     output_file.close()
+
 
 def convert_board(board):
     """
@@ -100,6 +110,6 @@ def convert_board(board):
     # print(np.array(l).reshape(8, 8))
     return np.array(l).reshape(64)
 
+
 if __name__ == "__main__":
     create_dataset()
-

@@ -50,6 +50,8 @@ import numpy as np
 import random
 import math
 from tqdm import tqdm
+import re
+import string
 
 
 def create_dataset():
@@ -72,29 +74,40 @@ def create_dataset():
                     break
                 uci_move_list.append(board.uci(move))
                 board.push(move)
-            split_game += math.ceil(split_game / 2)
             # cut part of the pgn notation. so that it is equal to uci
-            pgn_move_list = ' '.join(str(game.mainline()).split()[:split_game])
+            split_game += math.ceil(split_game / 2)
+            pgn_move_list = re.sub("([{]).*?([}])", "", str(game.mainline()).replace("\n", ""))
+            pgn_move_list = ' '.join(pgn_move_list.split()[:split_game])
             pgn_move_list = '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' + pgn_move_list
             uci_move_list = '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' + ' '.join(uci_move_list)
+
             if split_game > max_length:
                 max_length = split_game
                 max_length_pgn_file = open("data/max_length_pgn.txt", "w")
                 max_length_uci_file = open("data/max_length_uci.txt", "w")
-                max_length_uci_file.write(uci_move_list)
+                max_length_uci_file.write('<|startoftext|>[Result "' + game.headers["Result"] + '"] ' +
+                                          ' '.join(uci_move_list))
                 max_length_pgn_file.write(pgn_move_list)
                 max_length_pgn_file.close()
                 max_length_uci_file.close()
 
             board = convert_board(board)  # convert board to format I need
+            # print(pgn_move_list + ";" + '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' +
+            #                    ' '.join(uci_move_list) + ";" + str(board).replace("\n", "")[1:-1] + "\n")
             output_file.write(pgn_move_list + ";" + uci_move_list + ";" + str(board[1:-1]).replace("\n", "") + "\n")
+            # pgn_uci_2_board.append((pgn_move_list, '<|startoftext|>[Result "'+game.headers["Result"] + '"] ' +
+            #                         ' '.join(uci_move_list), board))
             game_number += 1
 
             if game_number % 1e4 == 0:  # print progress
                 pbar.update(1e4)
         except (ValueError, UnicodeDecodeError) as e:
             pass
+    print(game_number)
+    #max_length_file.write(str(max_length))
+    #pickle.dump(pgn_uci_2_board, output_file)
     output_file.close()
+    open("data/numb_probing_games.txt","w").write(str(game_number))
 
 
 def convert_board(board):

@@ -38,17 +38,27 @@ import numpy as np
 
 
 class ChessGamesDataset(IterableDataset):  # todo maybe iterabledataset if memory problems
-    def __init__(self, filename, notation, tokenizer, max_len):
+    def __init__(self, filename, numb_games, notation, tokenizer):
         self.filename = filename
         self.notation = notation
         self.tokenizer = tokenizer
-        self.tokenizer.model_max_length = max_len
+        self.train_counter = round(numb_games * 0.8)
+        self.dev_counter = round(numb_games * 0.1)
+        # get longest tokenized sequence so padding is possible
+        if model.notation == "uci":
+            self.tokenizer.model_max_length = model.tokenizer(open("data/max_length_uci.txt").readline(),
+                                                              return_length=True)['length']
+        else:  # == pgn
+            self.tokenizer.model_max_length = model.tokenizer(open("data/max_length_pgn.txt").readline(),
+                                                              return_length=True)['length']
 
     def game_mapper(self, file_iter):
         game = file_iter.split(";")
         board = np.fromstring(game[-1][1:-1], dtype=int, sep=' ')
         # give uci or pgn to the tokenizer
-        return self.tokenizer(game[1] if self.notation == "uci" else game[0], return_tensors='pt',
+        print(board)
+        return self.tokenizer(game[0] if self.notation == "pgn" else game[1],
+                              return_tensors='pt',
                               padding='max_length'), board
 
     def __iter__(self):
@@ -60,7 +70,17 @@ class ChessGamesDataset(IterableDataset):  # todo maybe iterabledataset if memor
 
 
 def train_probing_classifier(chess_model, dataset, probing_classifier):
-    for x, boards in DataLoader(dataset, batch_size=1): # todo set batch
+    c = 0
+    for x, boards in DataLoader(dataset, batch_size=1):  # todo set batch
+        print(boards)
+        exit()
+        if c > dataset.dev_counter:
+            test()
+        elif c > dataset.train_counter:
+            dev()
+        else: # train()
+            train()
+
         print(x.input_ids)
         #pt_outputs = chess_model.model(**games)  # todo check  shape (batch_size, sequence_length, hidden_size)
         #probing_classifier(pt_outputs.last_hidden_state)
@@ -94,18 +114,10 @@ if __name__ == "__main__":
     chess_models = [UciGPT]
     for model in chess_models:  # ["pretrained_gpt","pgn_gpt", "uci_gpt", "special_gpt"]
         # Creating the iterable dataset object
-        if model.notation == "uci":
-            # get the longest sequence from the tokenizer to do padding later.
-            max_length = model.tokenizer(open("data/max_length_uci.txt").readline(), return_length=True)['length']
-            print(max_length)
-        else:  # == pgn
-            max_length = model.tokenizer(open("data/max_length_pgn.txt").readline(), return_length=True)[
-                'length'].item()
-
-        dataset = ChessGamesDataset("data/probing_dataset.txt", model.notation, model.tokenizer, max_length)
-        probing_classifier = ProbingChess()
+        dataset = ChessGamesDataset("data/probing_dataset.txt", model.notation, model.tokenizer)
+        # Create Probing_classifier
+        probing_classifier = ProbingChess(model.config.n_embd, dataset.tokenizer.model_max_length)
         # todo split()
         train_probing_classifier(model, dataset, probing_classifier)
         # train_probing_classifier(model, dataset, probing_classifier)
-
         # todo save

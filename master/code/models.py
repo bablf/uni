@@ -1,30 +1,27 @@
-from transformers import GPT2Config, GPT2LMHeadModel, GPT2Model, GPT2Tokenizer
+from transformers import GPT2Config, GPT2LMHeadModel, GPT2Model, GPT2Tokenizer, GPT2TokenizerFast
 from learning_chess_blindfolded.src.data_utils.chess_tokenizer import ChessTokenizer
 
 
 class PgnGPT:
     """
-    This is a, on PGN notation finetuned, GPT-2 Model by Noever et. al. (Chess Transformer paper)
-    with the help of gpt-2-simple.
-    checkpoint downloaded from rb.gy/dsdphc
+    (Chess Transformer paper)
+    This is a, on PGN notation finetuned, GPT-2 Model with the help of gpt-2-simple.
     """
-    config = GPT2Config.from_json_file("noever_gpt2_checkpoint_huggingface_compatible/config.json")
-    #config = GPT2Config.from_pretrained("gpt2-medium")
-
-    # config.output_hidden_states = True
-    # Don't use upper config. Has no LMHead. Other Param. are the same to gpt2
-    # config.output_hidden_states = True
-    # print(config)
-    # model = GPT2Model.from_pretrained("pgn_checkpoint/run1/model-1000.index", from_tf=True, config=config)
-    # tokenizer = GPT2Tokenizer("pgn_checkpoint/run1/encoder.json", "pgn_checkpoint/run1/vocab.bpe")
-    # notation = "pgn"
-    # name = "PgnGPT"
+    config = GPT2Config.from_pretrained("gpt2-medium")
+    config.output_hidden_states = True
+    model = GPT2Model.from_pretrained("pgn_checkpoint/run1/model-19500.index", from_tf=True, config=config)
+    tokenizer = GPT2TokenizerFast("pgn_checkpoint/run1/encoder.json", "pgn_checkpoint/run1/vocab.bpe")
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "left"
+    tokenizer.add_prefix_space = True
+    name = "PgnGPT"
+    notation = "pgn"
 
 
 class UciGPT:
     """
     This is a, on UCI notation finetuned, GPT-2 Model with the help of gpt-2-simple.
-    See file uic_gpt2.py
+
     """
     config = GPT2Config.from_pretrained("gpt2-medium")
     config.output_hidden_states = True

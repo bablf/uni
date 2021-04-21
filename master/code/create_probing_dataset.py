@@ -9,12 +9,8 @@ The resulting dataset looks like this:
 
 There will be 3 settings:
 
-# TODO: setting mit beendetem Spiel
-# TODO: setting mitten im Spiel
-# TODO: setting am Anfang des Spiels
-
-# TODO: Which size should the dataset have?
-    - should be arround 50k according to Chess blindfolded.
+# Which size should the dataset have?
+    - should be arround 500k according to Chess blindfolded.
     - make sure no duplicates
     Which dataset?
      - Millionbase https://rebel13.nl/rebel13/rebel%2013.html
@@ -22,92 +18,102 @@ There will be 3 settings:
 Feldman used 23,000 played games (converted) to finetune
 Noever aka Chess Transformers use 2.1 Mil games for finetuning gpt2
 
-"""
-# Datensatz erstellen, der Überprüft werden soll.
-# Aufbau von Datensatz: String von PGN UND UCI notation --> Schachfeld.
-# beides, damit man sowohl PGN als auch UCI nutzen könnte.
-
-"""
 Format of dataset
-    Option 1: 
+    Option 1:
 #       - PGN, UCI, Gamedevelopment on board
 #       --> Gamedeveleopment on board: 8x8xGameLenght
-#       --> gameLenght varies from game to game. Is that a problem? 
+#       --> gameLenght varies from game to game. Is that a problem?
         for move in pgn/uci/special:
             actual board state = calculate_board_state
-            hidden states = give list of moves till now to finetuned model 
+            hidden states = give list of moves till now to finetuned model
             prediction for board = probing(hidden states)
-            compare with actual board state. 
-#   =====> Idee verworfen, weil könnte schwer werden zu implementieren. 
-    # TODO: Option 2: 
-            Cut PGN/UCI at some point (1/3 opening, 1/3 mid game, 1/3 late game/cut)
+            compare with actual board state.
 """
 
-import chess.pgn as pgn
-import pickle
 import chess
+import chess.pgn as pgn
 import numpy as np
-import random
-import math
-from tqdm import tqdm
 import re
-import string
+import json
+from tqdm import tqdm
 
 
 def create_dataset():
-    source_file = open("data/2005.pgn", encoding='cp1252')  # open millionbase in pgn # todo change to millionbase
-    output_file = open("data/probing_dataset.txt", 'w')
+    source_file = open("data/millionbase.pgn", encoding='cp1252')  # open millionbase in pgn
+    output_file = open("data/probing_dataset.jl", 'w')
     game_number = 0
-    max_length = 0
+    max_length = 90
+    once = False
+    longest = 0
     pbar = tqdm(total=5e5)
+
     while game_number < 5e5:  # 500k games should be enough
         try:
             game = pgn.read_game(source_file)
+            if len(str(game.mainline()).split()) < 7:  # if game is too short skip it
+                continue
             if game is None:  # if last game
                 break
             board = game.board()
             uci_move_list = []
-            split_game = random.randint(0, len(list(game.mainline())) - 1)
+            board_state = []
+            # Random split between 0 and 50 (40 is the reported average Movenumber per game)
+            # split_game = random.randint(0, max(50, len(list(game.mainline())) - 1))
 
             for i, move in enumerate(game.mainline_moves()):  # convert each game to uci with python chess
-                if i == split_game:  # stop at random point in pgn notation
+                if i == max_length:  # stop at random point in pgn notation
                     break
                 uci_move_list.append(board.uci(move))
                 board.push(move)
-            # cut part of the pgn notation. so that it is equal to uci
-            split_game += math.ceil(split_game / 2)
-            pgn_move_list = re.sub("([{]).*?([}])", "", str(game.mainline()).replace("\n", ""))
-            pgn_move_list = ' '.join(pgn_move_list.split()[:split_game])
+                board_state.append(convert_board(board))
+
+            # cut part of the pgn notation. so that it is equal to uci and remove comments
+            pgn_move_list = re.sub('([{]).*?([}])', "", str(game.mainline()).replace("\n", ""))
+            pgn_move_list = ' '.join(pgn_move_list.split()[:135])  # 90 Moves + 45 moves numbers in pgn notation
+
             pgn_move_list = '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' + pgn_move_list
             uci_move_list = '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' + ' '.join(uci_move_list)
-
-            if split_game > max_length:
-                max_length = split_game
-                max_length_pgn_file = open("data/max_length_pgn.txt", "w")
+            # print(uci_move_list)
+            # print(pgn_move_list)
+            if board.fullmove_number*2 > max_length and once is False:
                 max_length_uci_file = open("data/max_length_uci.txt", "w")
-                max_length_uci_file.write('<|startoftext|>[Result "' + game.headers["Result"] + '"] ' +
-                                          ' '.join(uci_move_list))
+                max_length_uci_file.write(uci_move_list)
+                max_length_uci_file.close()
+                once = True
+            if len(pgn_move_list) > longest:
+                max_length_pgn_file = open("data/max_length_pgn.txt", "w")
                 max_length_pgn_file.write(pgn_move_list)
                 max_length_pgn_file.close()
-                max_length_uci_file.close()
+            if pgn_move_list.count("startoftext") >= 2:
+                print(pgn_move_list)
+                exit()
 
-            board = convert_board(board)  # convert board to format I need
-            # print(pgn_move_list + ";" + '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' +
-            #                    ' '.join(uci_move_list) + ";" + str(board).replace("\n", "")[1:-1] + "\n")
-            output_file.write(pgn_move_list + ";" + uci_move_list + ";" + str(board[1:-1]).replace("\n", "") + "\n")
-            # pgn_uci_2_board.append((pgn_move_list, '<|startoftext|>[Result "'+game.headers["Result"] + '"] ' +
-            #                         ' '.join(uci_move_list), board))
+            board_state = np.vstack(board_state)
+            n = abs(max_length - board_state.shape[0])
+            # if n > 0:  # Add padding to 90 with empty arrays. (used for gold standard in probing_classifier)
+            #     b = np.concatenate((np.array([np.zeros(64, dtype=int)]*n), board_state), axis=0)
+            # else:
+            #     b = board_state
+            # if b.shape != (90, 64):
+            #     print("error")
+            data = {"pgn": pgn_move_list, "uci": uci_move_list, "board": board_state.tolist()}
+            json.dump(data, output_file)
+            output_file.write('\n')
+            # write everything to file. board needs to be iterated, because its too big to do str(b)
+            # output_file.write(pgn_move_list + ";" + uci_move_list + ";")
+            # for r in b:
+            #     output_file.write(str(r)[1:-1].replace("\n", "") + " ")  # remove [ ] and newlines
+            # output_file.write("\n")
+
             game_number += 1
-
             if game_number % 1e4 == 0:  # print progress
                 pbar.update(1e4)
         except (ValueError, UnicodeDecodeError) as e:
-            pass
+            exit()
+
     print(game_number)
-    #max_length_file.write(str(max_length))
-    #pickle.dump(pgn_uci_2_board, output_file)
-    output_file.close()
-    open("data/numb_probing_games.txt","w").write(str(game_number))
+    #output_file.close()
+    open("data/numb_probing_games.txt", "w").write(str(game_number))
 
 
 def convert_board(board):

@@ -1,7 +1,12 @@
 
 import pandas as pd
+length = 0
+i = 0
+with open("data/uci_dataset_with_tags.txt", "r") as f:
+    for line in f:
+         length +=len(line.split()[1:])
+         i+=1
 
-read_file = pd.read_csv("data/probing_dataset.txt", sep=";")
-print(read_file.dtypes)
-print(read_file.info)
-# read_file.to_csv("data/probing_dataset.csv", index=None)
+    print(length)
+    print(i)
+    print(length/i)

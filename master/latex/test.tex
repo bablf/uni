@@ -128,7 +128,20 @@ more like "do transformers learn this?" Is this information in the hidden state
 \chapter{Consequence of Results}
 
 
-
+commands for splitting dataset into train, val test
+wc -l probing_dataset.jl
+500000 probing_dataset.jl
+flo@flo-PC:~/uni/master/code/data$ bc <<< "500000 /10*6"
+300000
+flo@flo-PC:~/uni/master/code/data$ bc <<< "500000 /10*2"
+100000
+flo@flo-PC:~/uni/master/code/data$ head -n 300000 probing_dataset.jl > train_probing.jl
+flo@flo-PC:~/uni/master/code/data$ sed -n 300001,400000 probing_dataset.jl > val_probing.jl
+sed: -e expression #1, char 13: missing command
+flo@flo-PC:~/uni/master/code/data$ sed -n 300001,400000p probing_dataset.jl > val_probing.jl
+flo@flo-PC:~/uni/master/code/data$ sed -n 400001,500000p probing_dataset.jl > val_probing.jl
+flo@flo-PC:~/uni/master/code/data$ sed -n 300001,400000p probing_dataset.jl > val_probing.jl
+flo@flo-PC:~/uni/master/code/data$ sed -n 400001,500000p probing_dataset.jl > test_probing.j
 
 
 %Beispielliteratur

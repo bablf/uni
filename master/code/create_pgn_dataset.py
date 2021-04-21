@@ -11,10 +11,11 @@ https://www.milibrary.org/
 
 import argparse
 import chess.pgn as pgn
+import re
 
 
 def read_games(verbose, split_uci):
-    source_file = open("data/2005.pgn")  # Todo change to kingbase_milibrary
+    source_file = open("data/kingbase_milibrary.PGN")  # Todo change to kingbase_milibrary
     output_file = open("data/pgn_dataset_with_tags.txt", 'w')
     game_number = 0
 
@@ -24,9 +25,11 @@ def read_games(verbose, split_uci):
             if game is None:  # if last game
                 break
             game_number += 1
+            pgn_move_list = re.sub("([{]).*?([}])", "", str(game.mainline()).replace("\n", ""))
+            pgn_move_list = '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' + pgn_move_list + \
+                            "<|endoftext|>"+"\n"
             # Write PGN to file, add EOS and BOS tags and [Result "1-0"] as stated in Chesstransformer paper
-            output_file.write('<|startoftext|>[Result "'+game.headers["Result"] + '"] ' +
-                              ' '.join(str(game.mainline()))+"<|endoftext|>"+"\n")  # save to file
+            output_file.write(pgn_move_list)  # save to file
 
             if verbose:
                 # print('[Result "'+game.headers["Result"] + '"] ' + ' '.join(uci_movelist)+"\n", end='')
@@ -60,12 +63,13 @@ def encode_dataset():
     encode_plain_dataset(path_to_txt_file,
                          out_path=out_path,
                          model_name=model_name)
+    # Finetuning in Google Colab:
 
-# Finetuning in Google Colab:
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create UCI Dataset by Parsing PGN notation.')
     parser.add_argument('--verbose', default=True, type=bool)
     parser.add_argument('--split_uci', default=False, type=bool, help='split uci into e2 e4')
     args = parser.parse_args()
-    read_games(args.verbose, args.split_uci)
+    #read_games(args.verbose, args.split_uci)
     encode_dataset()

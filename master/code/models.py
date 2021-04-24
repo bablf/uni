@@ -8,7 +8,6 @@ class PgnGPT:
     This is a, on PGN notation finetuned, GPT-2 Model with the help of gpt-2-simple.
     """
     config = GPT2Config.from_pretrained("gpt2-medium")
-    config.output_hidden_states = True
     model = GPT2Model.from_pretrained("pgn_checkpoint/run1/model-19500.index", from_tf=True, config=config)
     tokenizer = GPT2TokenizerFast("pgn_checkpoint/run1/encoder.json", "pgn_checkpoint/run1/vocab.bpe")
     tokenizer.pad_token = tokenizer.eos_token
@@ -24,7 +23,6 @@ class UciGPT:
 
     """
     config = GPT2Config.from_pretrained("gpt2-medium")
-    config.output_hidden_states = True
     model = GPT2Model.from_pretrained("uci_checkpoint/run1/model-18500.index", from_tf=True, config=config)
     tokenizer = GPT2Tokenizer("uci_checkpoint/run1/encoder.json", "uci_checkpoint/run1/vocab.bpe")
     tokenizer.pad_token = tokenizer.eos_token
@@ -40,7 +38,6 @@ class PretrainedGPT:
     I use his custom ChessTokenizer from his github:
     """
     config = GPT2Config.from_pretrained("shtoshni/gpt2-chess-uci")
-    config.output_hidden_states = True
     model = GPT2LMHeadModel.from_pretrained("shtoshni/gpt2-chess-uci")
     vocab_file = "learning_chess_blindfolded/sample_data/lm_chess/vocab/uci/vocab.txt"
     tokenizer = ChessTokenizer(vocab_file, notation='uci', pad_token="<pad>", bos_token="<s>", eos_token="</s>")
@@ -54,7 +51,6 @@ class SpecialGPT:
     Model is not available online as of now (19.3.21). He provided his whole project (see feldman_gpt2 folder)
     """
     config = GPT2Config.from_json_file("feldman_gpt2/model/chess_model/config.json")
-    config.output_hidden_states = True
     model = GPT2LMHeadModel.from_pretrained("feldman_gpt2/model/chess_model/pytorch_model.bin", config=config)
     tokenizer = GPT2Tokenizer.from_pretrained("feldman_gpt2/model/chess_model/")
     notation = "pgn"

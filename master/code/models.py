@@ -9,10 +9,9 @@ class PgnGPT:
     """
     config = GPT2Config.from_pretrained("gpt2-medium")
     model = GPT2Model.from_pretrained("pgn_checkpoint/run1/model-19500.index", from_tf=True, config=config)
-    tokenizer = GPT2TokenizerFast("pgn_checkpoint/run1/encoder.json", "pgn_checkpoint/run1/vocab.bpe")
+    tokenizer = GPT2Tokenizer("pgn_checkpoint/run1/encoder.json", "pgn_checkpoint/run1/vocab.bpe")
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "left"
-    tokenizer.add_prefix_space = True
     name = "PgnGPT"
     notation = "pgn"
 

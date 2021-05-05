@@ -63,10 +63,10 @@ def create_dataset():
             for i, move in enumerate(game.mainline_moves()):  # convert each game to uci with python chess
                 if i == max_length:  # stop at random point in pgn notation
                     break
+                board_state.append(convert_board(board))
                 uci_move_list.append(board.uci(move))
                 board.push(move)
-                board_state.append(convert_board(board))
-
+            board_state.append(convert_board(board))  # add last board state
             # cut part of the pgn notation. so that it is equal to uci and remove comments
             pgn_move_list = re.sub('([{]).*?([}])', "", str(game.mainline()).replace("\n", ""))
             pgn_move_list = ' '.join(pgn_move_list.split()[:135])  # 90 Moves + 45 moves numbers in pgn notation
@@ -75,18 +75,18 @@ def create_dataset():
             uci_move_list = '<|startoftext|>[Result "' + game.headers["Result"] + '"] ' + ' '.join(uci_move_list)
             # print(uci_move_list)
             # print(pgn_move_list)
-            if board.fullmove_number*2 > max_length and once is False:
-                max_length_uci_file = open("data/max_length_uci.txt", "w")
-                max_length_uci_file.write(uci_move_list)
-                max_length_uci_file.close()
-                once = True
-            if len(pgn_move_list) > longest:
-                max_length_pgn_file = open("data/max_length_pgn.txt", "w")
-                max_length_pgn_file.write(pgn_move_list)
-                max_length_pgn_file.close()
-            if pgn_move_list.count("startoftext") >= 2:
-                print(pgn_move_list)
-                exit()
+            # if board.fullmove_number*2 > max_length and once is False:
+            #     max_length_uci_file = open("data/max_length_uci.txt", "w")
+            #     max_length_uci_file.write(uci_move_list)
+            #     max_length_uci_file.close()
+            #     once = True
+            # if len(pgn_move_list) > longest:
+            #     max_length_pgn_file = open("data/max_length_pgn.txt", "w")
+            #     max_length_pgn_file.write(pgn_move_list)
+            #     max_length_pgn_file.close()
+            # if pgn_move_list.count("startoftext") >= 2:
+            #     print(pgn_move_list)
+            #     exit()
 
             board_state = np.vstack(board_state)
             n = abs(max_length - board_state.shape[0])
@@ -113,7 +113,7 @@ def create_dataset():
 
     print(game_number)
     #output_file.close()
-    open("data/numb_probing_games.txt", "w").write(str(game_number))
+    #open("data/numb_probing_games.txt", "w").write(str(game_number))
 
 
 def convert_board(board):

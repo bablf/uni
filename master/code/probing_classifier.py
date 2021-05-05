@@ -75,7 +75,7 @@ class ProbingChess(pl.LightningModule):
 
         # calculate loss
         final_loss = self.loss(board, prediction)
-        #final_loss.backward(retain_graph=True)
+        final_loss.backward(retain_graph=True)
 
         # Logging to TensorBoard by default
         acc, precision, recall, f1_score = self.calc_metrics(prediction, board)
@@ -166,7 +166,7 @@ class ProbingChess(pl.LightningModule):
 
     def loss(self, board, prediction):
         loss_values = []
-        for i in range(64):
+        for i in range(1):
             # extract relevant field in batch/sequence_length
             true_board = board[:, :, i]  # shape(batch_size, len)
             predicted_board = prediction[:, :, i, :]  # shape(batch_size, len, 13)

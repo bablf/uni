@@ -147,8 +147,10 @@ if __name__ == "__main__":
         train_loader = DataLoader(train_dataset, batch_size=1, collate_fn=my_collate, num_workers=16)
         val_dataset = ChessGamesDataset("data/val_probing.jl", model.notation, model.tokenizer)
         val_loader = DataLoader(val_dataset, batch_size=1, collate_fn=my_collate, num_workers=16)
+        # create probing_classifier
+        probing_classifier = ProbingChess(model)
 
-        # create logger checkpoints
+        # create logger
         tb_logger = pl_loggers.TensorBoardLogger(model.name + 'logs/')
         lr_monitor = LearningRateMonitor(logging_interval=None, log_momentum=True)
         checkpoint_callback = ModelCheckpoint(monitor='val_loss',
@@ -174,10 +176,8 @@ if __name__ == "__main__":
                              callbacks=[lr_monitor],
                              auto_lr_find=True)
 
-        # create probing_classifier
-        probing_classifier = ProbingChess(model)
         trainer.tune(model=probing_classifier, train_dataloader=train_loader, val_dataloaders=val_loader,
-                     lr_find_kwargs={"min_lr": 1e-15, "max_lr": 1e-7})
+                     lr_find_kwargs={"min_lr": 1e-15, "max_lr": 1e-3})
         trainer.fit(probing_classifier, train_loader, val_loader)
 
         # todo save and load model save_hyper-parameters

@@ -26,7 +26,7 @@ from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import IterableDataset, DataLoader
 
 from models import PgnGPT, UciGPT, PretrainedGPT
-from probing_classifier import ProbingChess
+from binary_probing_classifier import ProbingChess
 
 seed_everything(40)
 
@@ -49,18 +49,17 @@ class ChessGamesDataset(IterableDataset):
     def game_mapper(self, file_iter):
         game = json.loads(file_iter)
         board = np.array(game["board"])
-        #tokenized_game = self.tokenizer(game["pgn"] if self.notation == "pgn" else game["uci"], return_tensors='pt',
-        #padding='max_length')
 
-        #todo chess_blindfolded
         if self.notation == "pgn":
             tokenized_game = self.tokenizer(game["pgn"], return_tensors='pt', padding='max_length')
         elif self.notation == "uci":
             tokenized_game = self.tokenizer(game["uci"], return_tensors='pt', padding='max_length')
         elif self.notation == "uci-blindfolded":
             tokenized_game = self.tokenizer([" ".join(game["uci"].split()[2:])], return_tensors='pt', padding='max_length')
+            tokenized_game["input_ids"] = torch.Tensor(tokenized_game["input_ids"] )
+            tokenized_game["end_positions"] = torch.Tensor(tokenized_game["end_positions"])
 
-        indices = self.get_indices(game, tokenized_game, board.shape[0])
+        indices = self.get_indices(tokenized_game)
         return tokenized_game, from_numpy(board), indices
 
     def __iter__(self):
@@ -70,9 +69,7 @@ class ChessGamesDataset(IterableDataset):
         mapped_itr = map(self.game_mapper, file_itr)
         return mapped_itr
 
-        # todo reset_session?
-
-    def get_indices(self, game, tokenized_game, n):
+    def get_indices(self, tokenized_game):
         """
         Gamestring will be splitted by space. ==> List_of_list: [[e2],[e4]...]
         List_of_list will be sent to the tokenizer and converted to [[12,32],[12,23].....]
@@ -88,7 +85,6 @@ class ChessGamesDataset(IterableDataset):
         :param game:  UCI or PGN
         :return:
         """
-        # todo chess_blindfolded
         # input_ids = self.tokenizer(game["pgn"].split())["input_ids"] if self.notation == "pgn" else \
         #     self.tokenizer(game["uci"].split())["input_ids"]
         if self.notation != "uci-blindfolded":
@@ -111,42 +107,29 @@ class ChessGamesDataset(IterableDataset):
             indices = torch.cat([torch.tensor([0]), torch.arange(3, len(tokenized_game["input_ids"][0]), 2)])
             return indices
 
+
 def my_collate(batch):
     data = [item[0] for item in batch]
-    v = {k: torch.cat([torch.tensor(dic[k]) for dic in data]) for k in data[0]}
+    v = {k: torch.cat([dic[k] for dic in data]) for k in data[0]}
 
+    # todo limitieren auf n züge und checken ob training besser wird.
     target = [item[1] for item in batch]
-    target = [torch.flip(t, dims=[0]) for t in target]
-    x = torch.LongTensor(pad_sequence(target, batch_first=True, padding_value=7))  # label will be 13
-    target = torch.flip(x, dims=[1]) + 6  # add 6 so all labels are > 0
+    target = torch.stack(target)
+    target[target != 0] = 1.0
 
     n = target.shape[1]
     ids = torch.vstack([torch.LongTensor(item[-1][-n:]) for item in batch])
+
     return [v, target, ids]
-    # for item in batch:
-    #     ids = torch.LongTensor(item[-1])
-    #     length = len(item[-1])
-    #     zeros = np.array([0] * (n - length))
-    #    z = sum(item[0]["input_ids"][0] == 50256)
-
-    #     ids += z
-    #     ids = np.concatenate(zeros, ids)
-
-    # x = [torch.cat([torch.LongTensor([0] * (n - len(item[-1]))),  # pad ids with 0's
-    # torch.LongTensor(item[-1]) + sum(item[0]["input_ids"][0] == 50256) - 1])
-    # add numb of padding ids to indix numbers
-    #      for item in batch]
-    # ids = torch.vstack(x)
-
-    # x = [torch.cat([torch.LongTensor([0] * (n - len(item[-1]))),  # pad ids with 0's
-    #                 torch.LongTensor(item[-1])])
-    #      for item in batch]
-    # ids = torch.vstack(x)
 
 
 if __name__ == "__main__":
-    chess_models = [PretrainedGPT]
+    chess_models = [PgnGPT]
     test = False
+    random = False
+    zeros = True
+    version = "zeros_baseline"
+
     for model in chess_models:  # ["pretrained_gpt","pgn_gpt", "uci_gpt", "special_gpt"]
         # create data-loaders
         train_dataset = ChessGamesDataset("data/train_probing.jl", model.notation, model.tokenizer)
@@ -154,33 +137,32 @@ if __name__ == "__main__":
         val_dataset = ChessGamesDataset("data/val_probing.jl", model.notation, model.tokenizer)
         val_loader = DataLoader(val_dataset, batch_size=1, collate_fn=my_collate, num_workers=8)
         # create probing_classifier
-        probing_classifier = ProbingChess(model)
+        probing_classifier = ProbingChess(model, random=random, zeros=zeros)
 
         # create logger
-        tb_logger = pl_loggers.TensorBoardLogger(save_dir='logs/', name=model.name)
+        tb_logger = pl_loggers.TensorBoardLogger(save_dir='logs/', name="binary" + model.name,
+                                                 version=version)
         lr_monitor = LearningRateMonitor(logging_interval=None, log_momentum=True)
         checkpoint_callback = ModelCheckpoint(monitor='val_loss',
                                               dirpath=model.name + 'pc_ckpt/',
                                               filename='sample-{epoch:02d}-{val_loss:.2f}')
-        # trainer = pl.Trainer(logger=tb_logger, gpus=1, overfit_batches=100,
-        # limit_val_batches=1, check_val_every_n_epoch=1,
-        #                     limit_train_batches=1, log_every_n_steps=10)
-        # trainer = pl.Trainer(logger=tb_logger, gpus=1,
-        #                      progress_bar_refresh_rate=100,
-        #                      min_epochs=5,
-        #                      log_every_n_steps=100,
-        #                      val_check_interval=5000,
-        #                      limit_val_batches=100,
-        #                      )  # resume_from_checkpoint)
         trainer = pl.Trainer(logger=tb_logger, gpus=1,
                              progress_bar_refresh_rate=100,
-                             min_epochs=5,
+                             max_epochs=1,
                              log_every_n_steps=100,
-                             val_check_interval=400,
-                             limit_train_batches=300000,  # not really limited
-                             limit_val_batches=1000,
-                             callbacks=[lr_monitor],
+                             val_check_interval=100,
+                             limit_train_batches=2500,
+                             limit_val_batches=100,
+                             callbacks=[checkpoint_callback],
                              auto_lr_find=True)
+        # Todo
+        # trainer = pl.Trainer(logger=tb_logger, gpus=1,
+        #                      progress_bar_refresh_rate=100,
+        #                      max_epochs=1,
+        #                      log_every_n_steps=500,
+        #                      overfit_batches=100,
+        #                      callbacks=[checkpoint_callback],
+        #                      auto_lr_find=True)
 
         # trainer.tune(model=probing_classifier, train_dataloader=train_loader, val_dataloaders=val_loader,
         #              lr_find_kwargs={"min_lr": 1e-15, "max_lr": 1e-3})
@@ -198,7 +180,7 @@ if __name__ == "__main__":
     #                     '15. Nb1 h6 16. Bh4 c5 17. dxe5 Nxe4 18. Bxe7 Qxe7 19. exd6 Qf6 20. Nbd2 Nxd6 21. Nc4 Nxc4 '
     #                     '22. Bxc4 Nb6 23. Ne5 Rae8 24. Bxf7+ Rxf7 25. Nxf7 Rxe1+ 26. Qxe1 Kxf7 27. Qe3 Qg5 28. Qxg5'
     #                     ' hxg5 29. b3 Ke6 30. a3 Kd6 31. axb4 cxb4 32. Ra5 Nd5 33. f3 Bc8 34. Kf2 Bf5 35. Ra7 g6 '
-    #                     '36. Ra6+ Kc5 37. Ke1 Nf4 38. g3 Nxh3 39. Kd2 Kb5 40. Rd6 Kc5 41. Ra6 Nf2 42. g4 Bd3 43. Re6 ',
+    #                    '36. Ra6+ Kc5 37. Ke1 Nf4 38. g3 Nxh3 39. Kd2 Kb5 40. Rd6 Kc5 41. Ra6 Nf2 42. g4 Bd3 43. Re6 ',
     #                     return_tensors="pt", padding=True)
     # print(x["input_ids"])
     # input_ids = x["input_ids"]

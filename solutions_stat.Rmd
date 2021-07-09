@@ -1,0 +1,1604 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Daten laden
+
+Laden Sie die Data Frames `ai` und `asp` vom IPS-Server:
+
+```{r}
+url <- "http://www.phonetik.uni-muenchen.de/~jmh/lehre/Rdf"
+ai <- read.table(file.path(url, "ai.txt"))
+asp <- read.table(file.path(url, "asp.txt"))
+```
+
+# Q & A's
+
+## 1. Basics
+
+-   **Q1.1**: *Erstellen Sie einen Vektor namens `num`, der diese Elemente enthält: 3, 10.15, -39.*
+
+```{r}
+num <- c(3, 10.15, -39.)
+```
+
+-   **Q1.2**: *Summieren Sie mittels einer Funktion alle Elemente des Vektors `num`.*
+
+```{r}
+
+sum(num)
+```
+
+-   **Q1.3**: *Multiplizieren Sie jedes Element des Vektors `num` mit 10 und speichern Sie das Ergebnis in einer Variable namens `x`.*
+
+```{r}
+x <- num * 10
+x
+```
+
+-   **Q1.4**: *Erstellen Sie die Schriftzeichen-Variable `name`, die Ihren Namen enthält.*
+
+```{r}
+name <- "floooo"
+```
+
+-   **Q1.5**: *Nutzen Sie eine Funktion, um den Inhalt der Variable `name` drei Mal auszugeben.*
+
+```{r}
+rep(name, times = 3)
+```
+
+-   **Q1.6**: *Erstellen Sie mit den Funktionen `c()` und `rep()` einen Vektor namens `buchstaben` mit dem Inhalt: "a" "a" "a" "b" "b" "b" "c" "c" "c" "d" "d" "d" "e" "e" "e".*
+
+```{r}
+buchstaben <- rep(c("a", "b", "c", "d", "e"), each = 3)
+buchstaben
+```
+
+-   **Q1.7**: *Lassen Sie sich mittels einer Funktion nur die einzigartigen Elemente des Vektors `buchstaben` ausgeben (d.h. entfernen Sie die Duplikate).*
+
+```{r}
+unique(buchstaben)
+```
+
+-   **Q1.8**: *Überprüfen Sie, ob "b" und "f" im Vektor `buchstaben` vorkommen.*
+
+```{r}
+c("b", "f") %in% buchstaben
+```
+
+-   **Q1.9**: *Erstellen Sie mittels einer Funktion einen Vektor mit dem Inhalt: "10.Z" "11.Z" "12.Z" "13.Z" "14.Z" "15.Z" "16.Z" "17.Z" "18.Z" "19.Z" "20.Z".*
+
+```{r}
+paste(c(10:20), "Z",sep=".")
+paste(10:20, "Z", sep = ".")
+```
+
+-   **Q1.10**: *Erstellen Sie mittels einer Funktion einen Vektor namens `z`, der folgende Elemente enthält: 1 1 3 3 6 6 1 1 3 3 6 6 1 1 3 3 6 6 1 1 3 3 6 6.*
+
+```{r}
+z <- rep(c(1,3,6), each=2, times=4)
+z <- rep(c(1, 3, 6), each = 2, times = 4)
+```
+
+-   **Q1.11**: *Überprüfen Sie, wie häufig die Zahlen 1, 3, und 6 im Vektor `z` vorkommen.*
+
+```{r}
+table(z)
+```
+
+-   **Q1.12**: *Erstellen Sie mittels einer Funktion eine Zahlensequenz aus 15 Zahlen, die bei 1 beginnen und bei 35 aufhören.*
+
+```{r}
+seq(from = 1, to = 35, length.out = 15)
+```
+
+-   **Q1.13**: *Erstellen Sie mittels einer Funktion eine Zahlensequenz von 100 beginnend rückwärts bis 50, wobei die Zahlen jeweils einen Abstand von 3.5 haben sollen. Speichern Sie das Ergebnis in der Variable `zahlen` ab.*
+
+```{r}
+zahlen <- seq(from = 100, to = 50, by = -3.5)
+zahlen
+```
+
+-   **Q1.14**: *Ziehen Sie die Quadratwurzel aus allen Zahlen im Vektor `zahlen`.*
+
+```{r}
+sqrt(zahlen)
+```
+
+-   **Q1.15**: *Überprüfen Sie, welche Elemente des Vektors `zahlen` größer oder gleich 75 sind.*
+
+```{r}
+
+zahlen >= 75
+```
+
+## 2. Arbeit mit Data Frames
+
+-   **Q2.1**: *Lassen Sie sich die Dimensionen (Zeilen- und Spaltenzahl) des Data Frames `ai` ausgeben.*
+
+```{r}
+dim(ai)
+```
+
+-   **Q2.2**: *Lassen Sie sich die Spaltennamen von `ai` ausgeben.*
+
+```{r}
+colnames(ai)
+```
+
+-   **Q2.3**: *Recherchieren Sie, wie Sie sich den maximalen F1-Wert in `ai` ausgeben lassen können.*
+
+```{r}
+max(ai$F1)
+```
+
+-   **Q2.4**: *Addieren Sie die Spalten `Lippe` und `Kiefer` aus dem Data Frame `ai` für jede Beobachtung.*
+
+```{r}
+ai$Lippe + ai$Kiefer
+```
+
+-   **Q2.5**: *Subtrahieren Sie 100 von jedem F1-Wert in `ai`.*
+
+```{r}
+ai$F1 - 100
+```
+
+-   **Q2.6**: *Lassen Sie sich die ersten Zeilen des Data Frames `asp` mittels einer Funktion ausgeben.*
+
+```{r}
+head(asp)
+```
+
+-   **Q2.7**: *Verwenden Sie eine Funktion, um herauszufinden, wie oft die einzelnen Konsonanten in der Spalte `Kons` des Data Frames `asp` vorkommen.*
+
+```{r}
+table(asp$Kons)
+```
+# Daten & Packages laden
+
+Laden Sie die folgenden Packages und Data Frames:
+
+```{r}
+library(tidyverse)
+library(magrittr)
+url <- "http://www.phonetik.uni-muenchen.de/~jmh/lehre/Rdf"
+dip <- read.table(file.path(url, "dip.txt"), stringsAsFactors = T)
+preasp <- read.table(file.path(url, "preasp.txt"), stringsAsFactors = T)
+```
+
+# Q & A's
+
+## 1. Basics
+
+-   **Q1.1**: *Bestätigen Sie, dass die Variable `V` im Data Frame `dip` ein Faktor ist.*
+
+```{r}
+class(dip$V)
+```
+
+-   **Q1.2**: *Was sind die Stufen von diesem Faktor?*
+
+```{r}
+levels(dip$V)
+```
+
+-   **Q1.3**: *Wieviele einzigartige Elemente gibt es in der Variable `Vpn` im Data Frame `dip`?*
+
+```{r}
+length(unique(dip$Vpn))
+```
+
+-   **Q1.4**: *Lassen Sie sich mittels einer Funktion die Vorkommenshäufigkeit der verschiedenen Vokale `V` im Data Frame `dip` anzeigen.*
+
+```{r}
+table(dip$V)
+```
+
+-   **Q1.5**: *Finden Sie mittels `table()` heraus, wie viele Tokens pro Vokalkategorie `V` pro Versuchsperson `Vpn` es im Data Frame `dip` gibt.*
+
+```{r}
+table(dip$V, dip$Vpn)
+dip %>% select(V, Vpn) %>% table()
+```
+
+## 2. Filtering & Selecting
+
+-   **Q2.1**: *Lassen Sie sich vom Data Frame `dip` die Beobachtungen 1-10 ausgeben.*
+
+```{r}
+dip %>% slice(1:10)
+```
+
+-   **Q2.2**: *Lassen Sie sich vom Data Frame `dip` die Beobachtungen 15, 18, 20 der Variable `V` ausgeben.*
+
+```{r}
+dip %>% 
+  slice(15, 18, 20) %>% 
+  select(V)
+```
+
+-   **Q2.3**: *Lassen Sie sich vom Data Frame `dip` die Variablen `d` und `V` für die zehn Beobachtungen mit den höchsten `d`-Werten ausgeben.*
+
+```{r}
+dip %>% 
+  select(d, V) %>% 
+  slice_max(d, n = 10)
+```
+
+-   **Q2.4**: *Lassen Sie sich vom Data Frame `dip` die letzten vier Beobachtungen ausgeben.*
+
+```{r}
+dip %>% slice_tail(n = 4)
+```
+
+-   **Q2.5**: *Lassen Sie sich vom Data Frame `dip` alle ungeraden Zeilen ausgeben. Tipp: Mit der Funktion `seq()` können Sie einen Vektor von ungeraden Ganzzahlen erzeugen.*
+
+```{r}
+dip %>% slice(seq(1, nrow(dip), by = 2))
+```
+
+-   **Q2.6**: *Lassen Sie sich alle Beobachtungen aus `dip` ausgeben, wo die Versuchsperson `Vpn` 67 ist und `d` höher als 190. (Ergebnis hat 5 Zeilen und 3 Spalten)*
+
+```{r}
+dip %>% filter(Vpn == 67 & d > 190)
+```
+
+-   **Q2.7**: *Lassen Sie sich die fünf Beobachtungen mit den niedrigsten `d`-Werten aus `dip` ausgeben, wo der Vokal `V` nicht "aU" und nicht "OY" ist.*
+
+```{r}
+dip %>% 
+  filter(!V %in% c("aU", "OY")) %>% 
+  slice_min(d, n = 5)
+```
+
+-   **Q2.8**: *Lassen Sie sich die Variable `d` aus dem Data Frame `dip` als Vektor ausgeben.*
+
+```{r}
+dip %>%pull(d)
+# or 
+c(dip$d)
+```
+
+-   **Q2.9**: *Lassen Sie sich aus dem Data Frame `preasp` die ersten drei Beobachtungen für alle Variablen ausgeben, deren Spaltennamen auf "dur" endet.*
+
+```{r}
+preasp %>% select(ends_with("dur")) %>% slice(1:3)
+preasp %>% 
+  select(ends_with("dur")) %>% 
+  slice_head(n = 3)
+```
+
+-   **Q2.10**: *Lassen Sie sich aus dem Data Frame `preasp` die erste Beobachtung der Variablen `spk` bis `vc` ausgeben.*
+
+```{r}
+preasp %>% 
+  select(spk:vc) %>% 
+  slice(1)
+```
+
+## 3. Mutating & Renaming
+
+-   **Q3.1**: *Benennen Sie die Variablen im Data Frame `dip` dauerhaft um in `Dauer`, `Vokal`, `Versuchsperson`.*
+
+```{r}
+dip %<>% rename(Dauer=d, Vokal=V, Versuchsperson=Vpn)
+```
+
+-   **Q3.2**: *Hängen Sie an den Data Frame `dip` temporär eine Spalte namens `Index` an, die die Zahlen von 1 bis 186 enthält.*
+
+```{r}
+dip %>% mutate(Index = 1:186)
+```
+
+-   **Q3.3**: *Hängen Sie an den Data Frame `dip` dauerhaft eine Spalte namens `Länge` an, die den Wert "lang" enthält, wenn die Dauer höher ist als 200, "kurz" für Dauerwerte unter 100, und "mittel" für alle anderen Dauerwerte.*
+
+```{r}
+dip %<>% mutate(Länge = case_when(Dauer > 200 ~ "lang",
+                                  Dauer < 100 ~ "kurz",
+                                  Dauer > 100 & Dauer < 200 ~ "mittel"))
+dip %>% head()
+```
+
+-   **Q3.4**: *Hängen Sie an den Data Frame `dip` dauerhaft eine Spalte namens `Region` an, die den Wert "Bayern" enthält für die Versuchsperson 67 und "Berlin" für die Versuchsperson 68.*
+
+```{r}
+dip %<>% mutate(Region = ifelse(Versuchsperson == 67, "Bayern", "Berlin"))
+dip %>% head()
+```
+
+
+# Daten & Packages laden
+
+Laden Sie die folgenden Packages und Data Frames:
+
+```{r}
+library(tidyverse)
+library(magrittr)
+url <- "http://www.phonetik.uni-muenchen.de/~jmh/lehre/Rdf"
+rating <- read.table(file.path(url, "rating.txt"))
+preasp <- read.table(file.path(url, "preasp.txt"))
+asp <- read.table(file.path(url, "asp.txt"))
+vdata <- read.table(file.path(url, "vdata.txt"))
+```
+
+# Q & A's
+
+## 1. Datenmanipulation mit `dplyr`
+
+-   **Q1.1**: *Benennen Sie die Spalten `vdur`, `clodur`, `vtype` im Data Frame `preasp` dauerhaft um in `vowelDuration`, `closureDuration` und `vowelType`, und lassen Sie sich die Spaltennamen des Data Frames anzeigen.*
+
+```{r}
+preasp %<>% rename(vowelDuration = vdur, 
+                   closureDuration = clodur, 
+                   vowelType = vtype)
+preasp %>% colnames()
+```
+
+-   **Q1.2**: *Finden Sie heraus, welche Vokale (`vowelType`) im Data Frame `preasp` mit den fünf höchsten Vokaldauern (`vowelDuration`) assoziiert sind. (Ergebnis ist ein Vektor mit 5 Elementen)*
+
+```{r}
+preasp %>% 
+  slice_max(vowelDuration, n = 5) %>% 
+  pull(vowelType)
+```
+
+-   **Q1.3**: *Berechnen Sie für die drei verschiedenen Konsonanten (`cplace`) im Data Frame `preasp` die maximale, minimale und durchschnittliche Verschlussdauer (`closureDuration`) und sortieren Sie das Ergebnis nach absteigender durchschnittlicher Verschlussdauer. (Ergebnis hat 3 Zeilen und 4 Spalten)*
+
+```{r}
+preasp %>% 
+  group_by(cplace) %>% 
+  summarise(minimum = min(closureDuration),
+            maximum = max(closureDuration),
+            mittel = mean(closureDuration)) %>% 
+  arrange(desc(mittel))
+```
+
+-   **Q1.4**: *Berechnen Sie für alle Beobachtungen, wo der Vokal "a" und die Region ungleich "C" ist, die Standardabweichung der Vokaldauer pro Region und Stadt. (Ergebnis hat 12 Zeilen und 3 Spalten)*
+
+```{r}
+preasp %>% 
+  filter(vowelType == "a" & region != "C") %>%
+  group_by(region, city) %>% 
+  summarise(stdabw = sd(vowelDuration))
+```
+
+-   **Q1.5**: *Berechnen Sie pro Versuchsperson (`Vpn`) das erste und dritte Quartil des Ratings im Data Frame `rating`. (Ergebnis hat 26 Zeilen und 3 Spalten)*
+
+```{r}
+rating %>% 
+  group_by(Vpn) %>% 
+  summarise(Q1 = quantile(Rating, 0.25),
+            Q3 = quantile(Rating, 0.75))
+```
+
+-   **Q1.6**: *Berechnen Sie für die ersten 100 Beobachtungen im Data Frame `rating` den Median und den Mittelwert der Ratings pro Sprache (`Lang`). (Ergebnis hat 2 Zeilen und 3 Spalten)*
+
+```{r}
+rating %>% 
+  slice(1:100) %>% 
+  group_by(Lang) %>% 
+  summarise(med = median(Rating),
+            mit = mean(Rating))
+```
+
+-   **Q1.7**: *Finden Sie heraus, wie viele Beobachtungen es pro Versuchsperson (`Vpn`) im Data Frame `rating` gibt. (Ergebnis hat 26 Zeilen und 2 Spalten)*
+
+```{r}
+rating %>% 
+  group_by(Vpn) %>% 
+  summarise(count = n())
+```
+
+-   **Q1.8**: *Finden Sie heraus, wie viele einzigartige Sprecher `spk` es pro Stadt, Region und Konsonant (`cplace`) im Data Frame `preasp` gibt (Ergebnis hat 45 Zeilen und 4 Spalten). Lassen Sie sich anschließend ausgeben, für welche Kombination(en) aus Stadt, Region und Konsonant es die wenigsten einzigartigen Sprecher gibt. Tipp: Hierfür müssen Sie sicherstellen, dass das Ergebnis des ersten Teils ein ungruppierter Data Frame ist.*
+
+```{r}
+preasp %>% 
+  group_by(city, region, cplace) %>% 
+  summarise(count = n_distinct(spk)) %>% 
+  ungroup() %>%
+  slice_min(count, n = 1)
+# Alternative:
+preasp %>% 
+  group_by(city, region, cplace) %>% 
+  summarise(count = n_distinct(spk), .groups = "drop") %>% 
+  slice_min(count, n = 1)
+```
+
+## 2. Abbildungen mit `ggplot2`
+
+-   **Q2.1**: *Zeigen Sie mittels eines Barplots mit dem Data Frame `asp`, inwiefern der Konsonantentyp (`Kons`) von der Betonung (`Bet`) beeinflusst wird. Auf der x-Achse soll die Betonung angezeigt werden, die Füllfarbe der Balken soll sich nach dem Konsonantentyp richten. Die Balken sollen Proportionen anzeigen. Schreiben Sie unter Ihrem Code Ihre Einschätzung zu der Fragestellung als Kommentar auf.*
+
+```{r}
+ggplot(asp) + 
+  aes(x = Bet, fill = Kons) + 
+  geom_bar(position = "fill")
+
+# Ihre Einschätzung:
+# Der Konsonant k kommt deutlich häufiger in betonter Position vor, 
+# während der Konsonant t deutlich häufiger in unbetonter Position vorkommt.
+```
+
+-   **Q2.2**: *Erstellen Sie ein Histogramm über die Ratings im Data Frame `rating`, wobei die Balken eine Breite von 0.5 haben und weiß umrandet sein sollen.*
+
+```{r}
+ggplot(rating) + 
+  aes(x = Rating) + 
+  geom_histogram(binwidth = 0.5, 
+                 color = "white")
+```
+
+-   **Q2.3**: *Erstellen Sie die Abbildung aus Q2.2 erneut, aber diesmal mit der Wahrscheinlichkeitsdichte auf der y-Achse.*
+
+```{r}
+ggplot(rating) + 
+  aes(x = Rating, y = ..density..) + 
+  geom_histogram(binwidth = 0.5, 
+                 color = "white")
+```
+
+-   **Q2.4**: *Erstellen Sie einen Scatterplot über alle Beobachtungen des Data Frames `vdata`, bei denen der Vokal (`V`) entweder "A" oder "I" oder "U" ist. F1 soll auf der y- und F2 auf der x-Achse sein.*
+
+```{r}
+vdata %>% 
+  filter(V %in% c("A", "I", "U")) %>%
+  ggplot() + 
+  aes(x = F2, y = F1) + 
+  geom_point()
+```
+
+-   **Q2.5**: *Erstellen Sie einen Boxplot für F2 pro Versuchsperson (`Subj`) im Data Frame `vdata`. Fügen Sie dem Boxplot außerdem noch eine horizontale Linie bei 1500 Hz hinzu.*
+
+```{r}
+ggplot(vdata) + 
+  aes(x = Subj, y = F2) + 
+  geom_boxplot() + 
+  geom_hline(yintercept = 1500)
+```
+
+-   **Q2.6**: *Erstellen Sie einen Barplot mit dem Data Frame `preasp`, bei dem die Region auf der x-Achse liegt und die Füllfarbe den Vokaltyp (`vowelType`) angibt. Es sollen hier nur Beobachtungen verwendet werden, für die die Vokaldauer `vowelDuration` zwischen 0.09 und 0.18 liegt. Die Balken sollen außerdem nebeneinander liegen.*
+
+```{r}
+preasp %>% 
+  filter(vowelDuration > 0.09 & vowelDuration < 0.18) %>%
+  ggplot() + 
+  aes(x = region, fill = vowelType) + 
+  geom_bar(position = "dodge")
+```
+
+
+# Daten & Packages laden
+
+Laden Sie die folgenden Packages und Data Frames:
+
+```{r}
+library(tidyverse)
+library(magrittr)
+url <- "http://www.phonetik.uni-muenchen.de/~jmh/lehre/Rdf"
+rating <- read.table(file.path(url, "rating.txt")) %>% as_tibble()
+preasp <- read.table(file.path(url, "preasp.txt")) %>% as_tibble()
+vcv <- read.table(file.path(url, "vcvC.txt")) %>% as_tibble()
+vdata <- read.table(file.path(url, "vdata.txt")) %>% as_tibble()
+hp_looks <- read.csv(file.path(url, "hp_looks.txt"), sep="") %>% as_tibble()
+hp_measures <- read.csv(file.path(url, "hp_measures.txt"), sep="") %>% as_tibble()
+hp_meta <- read.csv(file.path(url, "hp_meta.txt"), sep="") %>% as_tibble()
+hp_names <- read.csv(file.path(url, "hp_names.txt"), sep="") %>% as_tibble()
+hp_wiz <- read.csv(file.path(url, "hp_wiz.txt"), sep="") %>% as_tibble()
+p <- read.table(file.path(url, "param.txt"), stringsAsFactors = F) %>% 
+  dplyr::filter(nchar(Vpn) > 4) %>% 
+  as_tibble()
+```
+
+# Q & A's
+
+## 1. Datenmanipulation mit `dplyr` & `tidyr`
+
+-   **Q1.1**: *Benennen Sie die Spalten `x`, `y` und `z` im Data Frame `diamonds` (wird automatisch mit dem tidyverse geladen) um in `laenge`, `breite` und `tiefe`. Erstellen Sie dann durch pivoting eine neue Spalte `measure` aus den drei umbenannten Spalten und eine neue Spalte `value`, die deren Werte enthält.*
+
+```{r}
+
+diamonds %>% 
+  rename(laenge = x, 
+         breite = y, 
+         tiefe = z) %>% 
+  pivot_longer(cols = c(laenge, breite, tiefe), 
+               names_to = "measure", 
+               values_to = "value")
+```
+
+-   **Q1.2**: *In der Spalte `Vpn` des Data Frames `p` befinden sich drei Informationen: Alter, Region und Staat, getrennt durch Unterstriche. Teilen Sie die Informationen dauerhaft in drei neue, sinnvoll benannte Spalten auf.*
+
+```{r}
+p %<>% 
+  separate(col = "Vpn", 
+           into = c("age", "region", "country"), 
+           sep = "_")
+```
+
+-   **Q1.3**: *Lassen Sie sich aus dem Data Frame `p` alle Beobachtungen ausgeben, wo die Versuchsperson zwischen 85 und 90 Jahren alt, der Context `Cont` "mie" und der Messwert `slopes` größer oder gleich 1.0 ist. (Ergebnis hat 2 Zeilen und 6 Spalten)*
+
+```{r}
+
+p %>% filter(age > 85 & age < 90 & 
+               Cont == "mie" & 
+               slopes >= 1.0)
+```
+
+-   **Q1.4**: *Wählen Sie aus dem Data Frame `vdata` die Spalten `F1` bis `Cons` aus sowie alle Beobachtungen, für die die Versuchsperson `Subj` nicht "bk" oder "hp" oder "ta" ist; formen Sie den Data Frame dann so um, dass die Formanten F1 und F2 in einer neuen Spalte `formant` und die F1- und F2-Werte in einer neuen Spalte `value` erscheinen. (Ergebnis hat 3424 Zeilen und 6 Spalten)*
+
+```{r}
+vdata %>% 
+  filter(!Subj %in% c("bk", "hp", "ta")) %>%
+  select(F1:Cons) %>%
+  pivot_longer(cols = c(F1, F2), names_to = "formant", values_to = "value")
+```
+
+-   **Q1.5**: *Finden Sie die durchschnittliche Reaktionszeit `RT` pro Versuchsperson `Subject`, Vokal `Vowel` und Sprache `Lang` im Data Frame `vcv` heraus. Fügen Sie dem daraus resultierenden Data Frame eine Spalte namens `tempo` hinzu, die folgende Werte enthält: "schnell" für alle mittleren Reaktionszeiten unter 500 ms, "mittel" für Reaktionszeiten zwischen 500 und 575 ms, "okay" für Reaktionszeiten zwischen 575 und 650 ms, "langsam" für Reaktionszeiten zwischen 650 und 800 ms, und "sehr langsam" für alle Reaktionszeiten über 800 ms. Finden Sie anschließend heraus, wie häufig jeder Wert der Variable `tempo` vorkommt. (Ergebnis hat 5 Zeilen und 2 Spalten)*
+
+```{r}
+
+vcv %>%
+  group_by(Subject, Vowel, Lang) %>% 
+  summarise(mean_rt = mean(RT)) %>% 
+  mutate(tempo = case_when(mean_rt < 500 ~ "schnell",
+                           mean_rt > 500 & mean_rt < 575 ~ "mittel",
+                           mean_rt > 575 & mean_rt < 650 ~ "okay",
+                           mean_rt > 650 & mean_rt < 800 ~ "langsam",
+                           mean_rt > 800 ~ "sehr langsam")) %>%
+  group_by(tempo) %>%
+  summarise(count = n())
+```
+
+## 2. Magical Joining mit `dplyr`
+
+-   **Q2.1**: *Verbinden Sie die beiden Data Frames `hp_names` und `hp_meta` so miteinander, dass alle Beobachtungen und alle Spalten aus beiden Data Frames im Ergebnis erhalten bleiben. Nutzen Sie die Spalte `id` als key. Es gibt hier verschiedene Lösungswege.*
+
+```{r}
+inner_join(hp_names, hp_meta, by = "id")
+full_join(hp_names, hp_meta, by = "id")
+left_join(hp_names, hp_meta, by = "id")
+right_join(hp_meta, hp_names, by = "id")
+```
+
+-   **Q2.2**: *Verbinden Sie die Data Frames `hp_names` und `hp_wiz` über die Spalte `id`, sodass nur Zeilen aus `hp_wiz` erhalten bleiben und das Ergebnis die Spalten beider Data Frames enthält. Es gibt hier verschiedene Lösungswege.*
+
+```{r}
+inner_join(hp_names, hp_wiz, by = "id")
+right_join(hp_names, hp_wiz, by = "id")
+left_join(hp_wiz, hp_names, by = "id")
+```
+
+-   **Q2.3**: *Verbinden Sie die Data Frames `hp_names` und `hp_wiz` über die Spalte `id`, sodass alle Zeilen aus `hp_names` erhalten bleiben und das Ergebnis die Spalten beider Data Frames enthält. Fehlende Werte sollen als `NA` im Ergebnis erscheinen. Es gibt hier verschiedene Lösungswege.*
+
+```{r}
+right_join(hp_wiz, hp_names, by = "id")
+left_join(hp_names, hp_wiz, by = "id")
+full_join(hp_names, hp_wiz, by = "id")
+```
+
+-   **Q2.4**: *Verbinden Sie die Data Frames `hp_names` und `hp_looks` über die Spalte `id`, sodass alle Beobachtungen und alle Spalten aus beiden Data Frames erhalten bleiben und die Spalten notfalls mit `NA` gefüllt werden. Hier gibt es nur eine Lösung.*
+
+```{r}
+full_join(hp_names, hp_looks, by = "id")
+```
+
+-   **Q2.5**: *Finden Sie mittels eines filtering joins über die Spalte `id` heraus, für welche Beobachtungen in `hp_looks` es keinen Match in `hp_names` gibt. Hier gibt es nur eine Lösung.*
+
+```{r}
+anti_join(hp_looks, hp_names, by = "id")
+```
+
+-   **Q2.6**: *Finden Sie mittels eines filtering joins über die Spalte `id` heraus, für welche Beobachtungen in `hp_names` es keinen Match in `hp_looks` gibt. Hier gibt es nur eine Lösung.*
+
+```{r}
+anti_join(hp_names, hp_looks, by = "id")
+```
+
+-   **Q2.7**: *Verbinden Sie die Data Frames `hp_names` und `hp_looks` über die Spalte `id`, sodass alle Beobachtungen und alle Spalten aus beiden Data Frames erhalten bleiben, für die es einen Match in beiden Data Frames gibt (keine neu erzeugten `NA`-Werte im Ergebnis). Hier gibt es nur eine Lösung.*
+
+```{r}
+inner_join(hp_names, hp_looks, by = "id")
+```
+
+-   **Q2.8**: *Finden Sie mittels eines filtering join über die Spalte `id` heraus, für welche Personen in `hp_names` es Messwerte in `hp_measures` gibt. Hier gibt es nur eine Lösung.*
+
+```{r}
+semi_join(hp_names, hp_measures, by = "id")
+```
+
+## 3. Abbildungen mit `ggplot2`
+
+Bei allen folgenden Plots dürfen Sie gerne mit den `ggplot2` Spezifikationen spielen: Verändern Sie die Farben, Punkt-Shapes, Linientypen, Schriftgröße, Achsenbeschriftungen...
+
+-   **Q3.1**: *Erstellen Sie einen Density Plot anhand des Data Frames `rating`. Auf der x-Achse soll das Rating angezeigt werden. Trennen Sie Panels nach Familiarität `Fam` in Zeilen und Sprache `Lang` in Spalten.*
+
+```{r}
+ggplot(rating) + 
+  aes(x = Rating) + 
+  geom_density() + 
+  facet_grid(Fam~Lang)
+```
+
+-   **Q3.2**: *Zeigen Sie anhand des Data Frames `preasp` mit einem Boxplot den Einfluss von Artikulationsstelle `cplace` auf die Verschlussdauer `clodur`. Farbkodieren Sie die Boxplots nach Artikulationsstelle und erstellen Sie verschiedene Panels für die Variable Region. Schreiben Sie unter Ihrem Code Ihre Einschätzung zu der Fragestellung als Kommentar auf.*
+
+```{r}
+ggplot(preasp) +
+  aes(x=cplace, y =clodur, fill=cplace) + 
+  geom_boxplot()+ 
+  facet_wrap(~region)
+ggplot(preasp) + 
+  aes(x = cplace, y = clodur, fill = cplace) + 
+  facet_wrap(~region) + 
+  geom_boxplot()
+
+# Ihre Einschätzung: 
+# Die Verschlussdauer ist am kürzesten in kk und am längsten in tt.
+# Die Regionen unterscheiden sich diesbezüglich kaum.
+```
+
+-   **Q3.3**: *Erstellen Sie ein Histogramm über die Reaktionszeiten `RT` im Data Frame `vcv` mit einer Balkenbreite von 75. Stellen Sie die drei Vokale in getrennten Panels dar.*
+
+```{r}
+ggplot(vcv) +
+  aes(x=RT) + 
+  facet_wrap(~Vowel)+
+  geom_histogram(binwidth = 75)
+ggplot(vcv) + 
+  aes(x = RT) +
+  facet_wrap(~Vowel) +
+  geom_histogram(color = "green", binwidth = 100)
+```
+
+-   **Q3.4**: *Erstellen Sie einen Lineplot mit allen Beobachtungen aus dem Data Frame `billboard` für die folgenden Künstler `artist`: "No Doubt", "Spears, Britney", "TLC", "Aguilera, Christina", "Backstreet Boys, The", "Pink", "Destiny's Child". Auf der y-Achse soll das Ranking und auf der x-Achse die Kalenderwoche aufgetragen werden -- dazu müssen Sie die Spalten `rank` und `week` mittels pivoting erstellen. Nutzen Sie außerdem die Funktion `factor()` innerhalb von `mutate()`, um die Werte in der Spalte `week` in einen Faktor mit den Levels 1 bis 32 umzuwandeln. Die Linien sollen nach dem Künstler farbkodiert werden. Da es pro Künstler zum Teil mehrere Songs in den Charts gibt, müssen Sie den aesthetic mappings noch `group = track` hinzufügen.*
+
+```{r}
+billboard %>% 
+  filter(artist %in% c("No Doubt", "Spears, Britney", "TLC", "Aguilera, Christina", 
+                       "Backstreet Boys, The", "Pink", "Destiny's Child")) %>% 
+  pivot_longer(cols = starts_with("wk"), 
+               names_to = "week", 
+               values_to = "rank",
+               names_prefix = "wk",
+               values_drop_na = TRUE) %>% 
+  mutate(week = factor(week, levels = 1:32)) %>%
+  ggplot() + 
+  aes(x = week, y = rank, col = artist, group = track) + 
+  geom_line()
+```
+
+-   **Q3.5**: *Erstellen Sie einen traditionell-phonetischen Formantplot (d.h. einen Scatterplot) mit dem Data Frame `vdata`. Wählen Sie zuerst nur die Zeilen aus dem Data Frame aus, wo der Vokal `V` entweder "A" oder "I" oder "U" ist. F2 gehört auf die x- und F1 auf die y-Achse. Farbkodieren Sie die Abbildung nach Vokal und erstellen Sie verschiedene Panels für die einzelnen Versuchspersonen `Subj`. Sorgen Sie zuletzt dafür, dass die Achsen jeweils umgedreht werden, also von hohen zu niedrigen Werten; nutzen Sie dafür die folgenden zwei Funktionen: `scale_x_reverse()` und `scale_y_reverse()`.*
+
+```{r}
+vdata %>% 
+  filter(V %in% c("A", "I", "U")) %>% 
+  ggplot() + 
+  aes(x = F2, y = F1, col = V) + 
+  facet_wrap(~Subj) +
+  scale_x_reverse() + 
+  scale_y_reverse() +
+  geom_point()
+```
+
+-   **Q3.6**: *Just for fun: Nutzen Sie die `hp...` Data Frames, um sich ein paar magische Plots auszudenken!*
+
+```{r}
+hp <- inner_join(hp_names, hp_measures, by = "id") %>% 
+  left_join(hp_looks, by = "id") %>% 
+  left_join(hp_meta, by = "id") %>% 
+  left_join(hp_wiz, by = "id")
+hp %>%
+  filter(year != "2016") %>%
+  ggplot() + 
+  aes(x = year, y = f0, col = name) + 
+  geom_line(size = 2)
+hp %>%
+  mutate(year = factor(year, levels = c(1991:1997, 2016))) %>%
+  filter(!is.na(f0)) %>%
+  ggplot() + 
+  aes(x = year, y = f0, group = name) + 
+  geom_line(size = 1.2) + 
+  facet_wrap(~name)
+hp %>%
+  filter(!is.na(eyeColour) & !is.na(house)) %>%
+  ggplot() + 
+  aes(x = house, fill = eyeColour) + 
+  geom_bar(position = "fill")
+hp %>%
+  filter(!is.na(house) & !is.na(f0)) %>%
+  ggplot() + 
+  aes(y = f0, fill = house) + 
+  geom_boxplot() 
+hp %>%
+  filter(!is.na(house) & !is.na(f0)) %>%
+  ggplot() + 
+  aes(x=house, y = f0, fill = gender) + 
+  geom_boxplot()
+```
+
+
+# Daten & Packages laden
+
+Laden Sie die folgenden Packages und Data Frames:
+
+```{r}
+library(tidyverse)
+url <- "http://www.phonetik.uni-muenchen.de/~jmh/lehre/Rdf"
+flights <- read.table("https://raw.githubusercontent.com/Rdatatable/data.table/master/vignettes/flights14.csv", 
+                      sep = ",", header = T, stringsAsFactors = T) %>% as_tibble()
+vcv <- read.table(file.path(url, "vcv.txt")) %>% as_tibble()
+lose <- read.table(file.path(url, "lose.txt"), header = T) %>% as_tibble()
+vlax <- read.table(file.path(url, "vlax.txt")) %>% as_tibble()
+```
+
+# Q & A's
+
+## 1. Grundlagen Wiederholung
+
+-   **Q1.1**: *Der Data Frame `flights` enthält Daten über Flüge, die im Jahr 2014 zwischen Januar und Oktober an einem der New York City Flughäfen starteten. Wählen Sie nur Zeilen für den Monat Januar aus. Finden Sie pro Fluggesellschaft `carrier` heraus, was die minimale, maximale und durchschnittliche Verpätung beim Abflug `dep_delay` war. Sortieren Sie nach absteigender durchschnittlicher Verspätung. (Ergebnis hat 13 Zeilen und 4 Spalten)*
+
+```{r}
+
+flights %>% 
+  filter(month == 1) %>%
+  group_by(carrier) %>%
+  summarise(minDelay = min(dep_delay),
+            maxDelay = max(dep_delay),
+            meanDelay = mean(dep_delay)) %>% 
+  arrange(desc(meanDelay))
+```
+
+-   **Q1.2**: *Erstellen Sie im Data Frame `flight` eine neue Spalte namens `date`, die die Werte aus den Spalten `year`, `month` und `day` durch einen Bindestrich getrennt enthält. Finden Sie heraus, an welchem Datum die höchste und niedrigste Verspätung bei Ankunft `arr_delay` vorkam.*
+
+```{r}
+flights %>% 
+  mutate(date = paste(year, month, day, sep = "-")) %>% 
+  filter(arr_delay %in% range(arr_delay)) %>%
+  select(date, arr_delay)
+```
+
+-   **Q1.3**: *Erstellen Sie einen Boxplot, der die Flugzeit `air_time` für die verschiedenen Fluggesellschaften `carrier` zeigt und färben Sie die Boxplots nach den drei NYC Flughäfen `origin`.*
+
+```{r}
+ggplot(flights) + 
+  aes(x = carrier, y = air_time, fill = origin) + 
+  geom_boxplot()
+
+# Alternative
+ggplot(flights) + 
+  aes(x = origin, y = air_time, fill = origin) +
+  facet_wrap(~carrier) +
+  geom_boxplot()
+```
+
+-   **Q1.4**: *Erstellen Sie einen Scatterplot, der den Einfluss von Länge der Strecke `distance` auf die Flugzeit `air_time` für alle Flüge zwischen 1500 und 2000 Meilen zeigt.*
+
+```{r}
+flights%>%
+  filter(distance >1500 & distance<2000) %>%
+  ggplot()+
+  aes(x=distance, y=air_time)+
+  geom_point()
+
+flights %>%
+  filter(distance > 1500 & distance < 2000) %>% 
+  ggplot() + 
+  aes(x = distance, y = air_time) + 
+  geom_point()
+```
+
+## 2. Normalverteilung
+
+-   **Q2.1**: *Testen Sie mit allen Ihnen zur Verfügung stehenden Mitteln, ob die Reaktionszeit `RT` im Data Frame `vcv` normalverteilt ist und geben Sie abschließend Ihre Einschätzung dazu ab.*
+
+```{r}
+# Überlagerung der Normalverteilung: 
+# großer Unterschied zwischen empirischer und theoretischer Verteilung
+ggplot(vcv) + 
+  aes(x = RT) + 
+  geom_density() + 
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(vcv$RT), sd = sd(vcv$RT)),
+                color = "yellow")
+# Q-Q-Plot:
+# Abweichungen der Datenpunkte von der Linie, vor allem im hohen Wertebereich
+ggplot(vcv) + 
+  aes(sample = RT) + 
+  stat_qq() + 
+  stat_qq_line() + 
+  ylab("samples") + 
+  xlab("theoretical quantiles")
+
+# Shapiro-Wilk-Test:
+# p < 0.001, d.h. nicht normalverteilt
+shapiro.test(vcv$RT)
+
+# Ihre Einschätzung:
+# Die Reaktionszeit ist eindeutig nicht normalverteilt. Wie man am Q-Q-Plot sehen kann, sind vor allem im
+# hohen Wertebereich die gemessenen Reaktionszeiten deutlich höher als sie es bei normalverteilten Daten wären.
+```
+
+-   **Q2.2**: *Auf der Kirmes gibt es einen ganz besonderen Losstand, bei dem auf jedem der insgesamt 5000 Lose eine Ganzzahl steht; die Ganzzahlen auf den Losen folgen einer Normalverteilung, d.h. es gibt deutlich mehr Lose, auf denen einen Zahl in der Nähe vom Mittelwert steht, als Lose mit sehr niedrigen oder sehr hohen Werten. Einen Preis kann man an dem Losstand nur gewinnen, wenn man ein Los mit einer Zahl unter 333 oder über 3333 zieht. Berechnen Sie das 95%-Konfidenzintervall für die Normalverteilung, die den Losen im Data Frame `lose` entspricht. Schätzen Sie anhand dessen, wie gut die Chancen stehen, an diesem Losstand einen Preis zu gewinnen.*
+
+```{r}
+
+mittel <- mean(lose$wert)
+stdabw <- sd(lose$wert)
+
+qnorm(0.025, mittel, stdabw)
+qnorm(0.975, mittel, stdabw)
+
+
+# Ihre Einschätzung,
+# Da sowohl 333 als auch 3333 außerhalb des Konfidenzintervalls liegt, stehen die Chancen schlecht.
+```
+
+-   **Q2.3**: *Berechnen Sie jetzt, wie hoch genau die Wahrscheinlichkeit ist, dass Sie bei den Losen einen Wert unter 333 oder über 3333 ziehen.*
+
+```{r}
+(pnorm(333, mittel, stdabw) + (1 - pnorm(3333, mittel, stdabw))) * 100
+# Die Wahrscheinlichkeit liegt bei ca. 0.41%.
+```
+
+-   **Q2.4**: *Berechnen Sie, wie hoch die Wahrscheinlichkeit ist, ein Los zu ziehen, auf dem eine Ganzzahl zwischen 1500 und 2500 steht.*
+
+```{r}
+(pnorm(2500, mean = mittel, sd = stdabw) - pnorm(1500, mean = mittel, sd = stdabw)) * 100
+# Die Wahrscheinlichkeit liegt bei ca. 68.5%.
+```
+
+## 3. Einfache lineare Regression
+
+-   **Q3.1**: *Berechnen Sie für den Data Frame `vlax` die Korrelation zwischen F1 und F2 und erläutern Sie das Ergebnis.*
+
+```{r}
+cor(vlax$F1, vlax$F2)
+# Es gibt eine moderate negative Korrelation, d.h. je höher F1, desto niedriger F2 (oder andersherum -- 
+# der kausale Zusammenhang ist hier unklar).
+```
+
+-   **Q3.2**: *Berechnen Sie für den Data Frame `vlax` die Korrelation zwischen F1 und F3 und erläutern Sie das Ergebnis.*
+
+```{r}
+cor(vlax$F1, vlax$F3)
+# Es gibt keine Korrelation zwischen F1 und F3.
+```
+
+-   **Q3.3**: *Erstellen Sie eine Abbildung samt Regressionslinie für den Zusammenhang zwischen F1 und F2 im Data Frame `vlax`.*
+
+```{r}
+
+ggplot(vlax) + 
+  aes(x = F1, y = F2) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F)
+```
+
+-   **Q3.4**: *Nennen Sie drei Eigenschaften von Regressionslinien der linearen Regression.*
+
+```{r}
+# Die Regressionslinie einer linearen Regression ist per definitionem gerade und unendlich lang.
+# Die Regressionslinie schneidet den Mittelwert der beiden Variablen.
+# Die Regressionslinie wird per least squares Verfahren berechnet, d.h. so, dass alle Punkte den geringst möglichen Abstand zur Linie haben.
+```
+
+
+# Daten & Packages laden
+
+Laden Sie die folgenden Packages und Data Frames:
+
+```{r}
+library(tidyverse)
+library(broom)
+url <- "http://www.phonetik.uni-muenchen.de/~jmh/lehre/Rdf"
+vlax <- read.table(file.path(url, "vlax.txt")) %>% as_tibble()
+v.df <- read.table(file.path(url, "v.df.txt"))
+```
+
+# Q & A's
+
+## 1. Grundlagen Wiederholung
+
+-   **Q1.1**: *Zeigen Sie anhand einer Abbildung mit dem Data Frame `vlax`, ob sich die beiden Versuchspersonen `Vpn` in ihrer Grundfrequenz `f0` unterscheiden. Notieren Sie Ihre Einschätzung zu dieser Frage.*
+
+```{r}
+ggplot(vlax) + 
+  aes(x = Vpn, y = f0) + 
+  geom_boxplot()
+
+# Die Versuchsperson V67 hat eine deutlich niedrigere Grundfrequenz als V68.
+```
+
+-   **Q1.2**: *Erstellen Sie einen klassischen Formantplot mit dem Data Frame `vlax`. Farbkodieren Sie die verschiedenen Vokale `V` und erstellen Sie verschiedene Panels für die Versuchspersonen.*
+
+```{r}
+ggplot(vlax) + 
+  aes(x = F2, y = F1, col = V) + 
+  geom_point() + 
+  facet_wrap(~Vpn) +
+  scale_x_reverse() + 
+  scale_y_reverse()
+```
+
+-   **Q1.3**: *Wählen Sie aus dem Data Frame `vlax` alle Zeilen aus, bei denen der Vokal entweder "I" oder "O" ist und bei denen die Grundfrequenz ungleich Null ist. Zeigen Sie mittels einer Abbildung für diese Zeilenauswahl, ob es einen linearen Zusammenhang zwischen Grundfrequenz `f0` und Schalldruck `dB` gibt (farbkodiert nach Vokal `V`). Notieren Sie kurz Ihre Einschätzung zu dieser Fragestellung und begründen Sie, weshalb Sie welche Variable auf die x- bzw. y-Achse gesetzt haben.*
+
+```{r}
+vlax %>% 
+  filter(V %in% c("O", "I") & f0 != 0) %>%
+  ggplot() + 
+  aes(x = dB, y = f0, col = V) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F)
+
+# Je höher der Schalldruck, desto höher die Grundfrequenz -- 
+# d.h. je lauter die Versuchspersonen sprachen, desto höher wurden ihre Stimmen.
+# Deshalb gehört f0 als die abhängige Variable auf die y-Achse.
+# Der lineare Zusammenhang ist nur bei "I" zu sehen.
+```
+
+## 2. Einfache lineare Regression (1)
+
+-   **Q2.1**: *Berechnen und interpretieren Sie die Korrelation* $r$ zwischen Grundfrequenz `f0` und Schalldruck `dB` im Data Frame `vlax`, getrennt für die Vokale "I" und "O" für alle Zeilen, bei denen f0 ungleich Null ist.
+
+```{r}
+vlax %>% 
+  filter(V %in% c("O", "I") & f0 != 0) %>% 
+  group_by(V) %>%
+  summarise(r = cor(f0, dB))
+
+# Es gibt eine starke positive Korrelation zwischen f0 und Schalldruck für "I",
+# d.h. je lauter das "I", desto höher die Grundfrequenz. Die Korrelation für "O"
+# ist hingegen schwach und negativ.
+```
+
+-   **Q2.2**: *Erstellen Sie einen neuen Data Frame namens `df`, der alle Zeilen aus `vlax` enthält, für die der Vokal `V` "I" ist und f0 ungleich Null. Finden Sie durch eine einfache lineare Regression heraus, ob die Grundfrequenz vom Schalldruck abhängig ist. Berichten Sie das Ergebnis.*
+
+```{r}
+df <- vlax %>% filter(V == "I" & f0 != 0)
+df.lm <- lm(f0 ~ dB, data = df)
+summary(df.lm)
+
+# Es besteht eine signifikante lineare Beziehung zwischen dem Schalldruck in dB und der 
+# Grundfrequenz f0 ($R^2$ = 0.35, $F$[1, 145] = 77.8, $p$ < 0.001).
+#F-statistic: 77.81 on 1 and 145 DF,  p-value: 3.294e-15
+```
+
+-   **Q2.3**: *Lassen Sie sich nur die Regressionskoeffizienten aus dem linearen Modell anzeigen. Erklären Sie, was das Intercept und die Slope in diesem Beispiel bedeuten.*
+
+```{r}
+coef(df.lm)
+# oder:
+df.lm$coefficients
+# oder:
+tidy(df.lm) %>% select(term, estimate)
+
+# Für einen Schalldruck von 0dB soll laut diesem Modell die Grundfrequenz bei -318.5 Hz liegen, 
+# was natürlich physisch nicht möglich ist. Für jede Erhöhung um ein Dezibel steigt die 
+# Grundfrequenz um ca. 7 Hz.
+```
+
+-   **Q2.4**: *Nutzen Sie predict(), um zu schätzen, wie hoch die Grundfrequenz laut dem linearen Modell für die Schalldruckwerte 50, 75 und 100dB sein müsste.*
+
+```{r}
+
+predict(df.lm, data.frame(dB = c(50, 75, 100)))
+# Hinterfragen Sie immer, wie realitätsnah und sinnvoll solche Schätzungen wirklich sind.
+```
+
+-   **Q2.5**: *Prüfen Sie, ob die Residuals aus dem Modell den Annahmen entsprechen. Berichten Sie, welche Implikation dies für das Modell hat.*
+
+```{r}
+# Normalverteilung ist zweifelhaft:
+# Es gibt ein paar Abweichungen von der Linie im Q-Q-Plot,
+# kleinere Abweichungen auch zwischen empirischer Verteilung 
+# und überlagerter Normalverteilung, sowie p < 0.05 im 
+# Shapiro-Wilk Test
+ggplot(augment(df.lm)) + 
+  aes(sample = .resid) + 
+  stat_qq() + 
+  stat_qq_line() + 
+  ylab("samples") + 
+  xlab("theoretical quantiles")
+
+ggplot(augment(df.lm)) + 
+  aes(x = .resid) + 
+  geom_density() + 
+  xlab("residuals") +
+  xlim(-150, 150) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(augment(df.lm)$.resid), 
+                            sd = sd(augment(df.lm)$.resid)), 
+                inherit.aes = F, 
+                color = "blue")
+
+shapiro.test(augment(df.lm)$.resid)
+
+# Konstante Varianz ist zweifelhaft:
+# Es scheint ein paar besonders große Fehler für f0-Werte um 200 Hz zu geben,
+# aber es sind zu wenige Datenpunkte, um ein klares Muster zu erkennen.
+ggplot(augment(df.lm)) + 
+  aes(x = .fitted, y = .resid) + 
+  geom_point() +
+  xlab("geschätzte f0-Werte") + 
+  ylab("Residuals") + 
+  geom_hline(yintercept = 0, lty = "dashed")
+
+# Da die Residuen eher nicht normalverteilt sind und eher keine konstante Varianz aufweisen,
+# war das lineare Modell nicht die richtige Wahl für die Daten.
+```
+
+## 3. Einfache lineare Regression (2)
+
+-   **Q3.1**: *Im Data Frame `v.df` sind die f0- und F1-Werte von zwei Versuchspersonen abgespeichert. Wählen Sie alle Zeilen aus dem Data Frame aus, wo f0 ungleich Null und kleiner als 300 Hz ist und speichern Sie das Ergebnis als `df`. Erstellen Sie anschließend mit `df` eine Abbildung, die pro Versuchsperson zeigt, ob F1 von f0 beeinflusst wird. Nutzen Sie hierfür `geom_smooth()`.*
+
+```{r}
+df <- v.df %>% filter(f0 != 0 & f0 < 300)
+
+ggplot(df) + 
+  aes(x = f0, y = F1) + 
+  geom_point() + 
+  facet_wrap(~Vpn) +
+  geom_smooth(method = "lm", se = F)
+
+# Alternative:
+ggplot(df) + 
+  aes(x = f0, y = F1, col = Vpn) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F)
+```
+
+-   **Q3.2**: *Berechnen Sie den* $R^2$-Wert pro Versuchsperson und interpretieren Sie die Ergebnisse.
+
+```{r}
+df %>% 
+  group_by(Vpn) %>% 
+  summarise(r2 = cor(f0, F1)^2)
+
+# Der R²-Wert gibt an, wie hoch die Proportion der Varianz in F1 ist, die durch f0 beschrieben werden kann. 
+# Für S67 können immerhin 11.3% der Varianz in F1 durch f0 beschrieben werden, für S68 nur 0.2%.
+```
+
+-   **Q3.3**: *Berechnen Sie eine lineare Regression, die prüft, ob es einen linearen Zusammenhang zwischen f0 und F1 gibt. Berichten Sie anschließend das Ergebnis.*
+
+```{r}
+
+df.lm <- lm(f0 ~ F1, data = df)
+summary(df.lm)
+
+# Es gibt keinen linearen Zusammenhang zwischen f0 und F1.
+```
+
+
+
+# Daten & Packages laden
+
+Laden Sie die folgenden Packages und Data Frames:
+
+```{r}
+library(tidyverse)
+library(broom)
+library(emmeans)
+url <- "http://www.phonetik.uni-muenchen.de/~jmh/lehre/Rdf"
+faux <- read.table(file.path(url, "faux.txt"), stringsAsFactors = T, header = T) %>% 
+  as_tibble()
+int <- read.table(file.path(url, "dbwort.df.txt"), stringsAsFactors = T) %>% 
+  as_tibble() %>% 
+  rename(vowel = V, gender = G)
+vlax <- read.table(file.path(url, "vlax.txt"), stringsAsFactors = T) %>%
+  as_tibble() %>%
+  filter(V %in% c("O", "I") & f0 != 0) %>%
+  rename(vowel = V, subject = Vpn)
+v.df <- read.table(file.path(url, "v.df.txt"), stringsAsFactors = T) %>% 
+  as_tibble() %>% 
+  filter(V %in% c("a", "I")) %>%
+  rename(vowel = V, subject = Vpn)
+vcv <- read.table(file.path(url, "vcv.txt"), stringsAsFactors = T) %>% 
+  as_tibble() %>% 
+  filter(Left != "f" & RT < 1000 & RT > 250) %>% 
+  rename(rt = RT, left = Left, language = Lang)
+```
+
+# Q & A's
+
+## 1. Residuen
+
+-   **Q1**: *Zeigen Sie, ob die Annahmen über die Residuen für die Regressionen `lm1` und `lm3` (aus der Vorlesung) zutreffen und beschreiben Sie, welche Implikationen die Ergebnisse für die berechneten linearen Modelle haben.*
+
+```{r}
+lm1 <- lm(f0 ~ dB + dur, data = faux)
+lm3 <- lm(db ~ vowel + gender, data = int)
+
+### lm1
+# Normalverteilung nicht gegeben
+ggplot(augment(lm1)) + 
+  aes(sample = .resid) + 
+  stat_qq() + 
+  stat_qq_line() + 
+  ylab("samples") + 
+  xlab("theoretical quantiles")
+
+ggplot(augment(lm1)) + 
+  aes(x = .resid) + 
+  geom_density() + 
+  xlab("residuals") +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(augment(lm1)$.resid), 
+                            sd = sd(augment(lm1)$.resid)), 
+                inherit.aes = F, 
+                color = "blue")
+
+shapiro.test(augment(lm1)$.resid)
+
+# Konstante Varianz: okay, bis auf ein paar Ausreißer
+ggplot(augment(lm1)) + 
+  aes(x = .fitted, y = .resid) + 
+  geom_point() +
+  xlab("geschätzte f0-Werte") + 
+  ylab("Residuals") + 
+  geom_hline(yintercept = 0, lty = "dashed")
+### Da die Residuen nicht normalverteilt sind, ist eine lineare Regression hier nicht das adäquate Modell!
+
+### lm3
+# Normalverteilung ist gegeben
+ggplot(augment(lm3)) + 
+  aes(sample = .resid) + 
+  stat_qq() + 
+  stat_qq_line() + 
+  ylab("samples") + 
+  xlab("theoretical quantiles")
+
+ggplot(augment(lm3)) + 
+  aes(x = .resid) + 
+  geom_density() + 
+  xlab("residuals") +
+  xlim(-100, 100) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(augment(lm3)$.resid), 
+                            sd = sd(augment(lm3)$.resid)), 
+                inherit.aes = F, 
+                color = "blue")
+
+shapiro.test(augment(lm3)$.resid)
+
+# Konstante Varianz sieht ebenfalls gut aus
+ggplot(augment(lm3)) + 
+  aes(x = .fitted, y = .resid) + 
+  geom_point() +
+  xlab("geschätzte f0-Werte") + 
+  ylab("Residuals") + 
+  geom_hline(yintercept = 0, lty = "dashed")
+
+### Da die Annahmen auf die Residuen von lm3 zutreffen, war die lineare Regression hier eine gute Wahl.
+```
+
+## 2. Multiple lineare Regression (1)
+
+-   **Q2.1**: *Wir wollen herausfinden, ob es einen Effekt von Versuchsperson `subject` und Lautstärke `dB` auf die Grundfrequenz `f0` im Data Frame `vlax` gibt. Erstellen Sie eine Abbildung der Daten und begründen Sie, weshalb Sie ein Modell mit/ohne Interaktion wählen würden.*
+
+```{r}
+ggplot(vlax) + 
+  aes(x = dB, y = f0, col = subject) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F)
+# Hier sollte ein Modell mit Interaktion gewählt werden, da der Effekt 
+# von Lautstärke auf die Grundfrequenz stärker für V68 als für V67 ausgeprägt ist.
+```
+
+-   **Q2.2**: *Berechnen Sie das Modell, das Sie in 2.1 vorgeschlagen haben, und erklären Sie, was die Schätzungen der Regressionskoeffizienten bedeuten.*
+
+```{r}
+lm.vlax <- lm(f0 ~ dB * subject, data = vlax)
+lm.vlax %>% tidy()
+# Für 0 dB und Versuchsperson V67 liegt die geschätzte Grundfrequenz bei -99.6 Hz.
+# Mit jedem Anstieg der Lautstärke um 1 dB (für Vpn V67) steigt die Grundfrequenz um 3.6 Hz.
+# Für den Wechsel von V67 zu V68 (bei konstanter Lautstärke) steigt sinkt die Grundfrequenz um 374.3 Hz.
+# Die Interaktion zwischen den unabhängigen Variablen liegt bei 5.8 Hz, d.h. wenn die 
+# Lautstärke steigt und die Versuchsperson V68 ist, steigt auch die Grundfrequenz.
+```
+
+-   **Q2.3**: *Berichten Sie die Ergebnisse der* $t$-Tests für die Regressionskoeffizienten.
+
+```{r}
+# Die Slopes für die Lautstärke ($t$ = 5.4, $p$ < 0.001) und Versuchsperson ($t$ = 4.5, $p$ < 0.001) unterscheiden sich signifikant von Null,
+# d.h. sie sind gute Prädiktoren für die Grundfrequenz.
+# Zusätzlich war auch die Interaktion zwischen den Variablen signifikant ($t$ = 5.2, $p$ < 0.001).
+```
+
+-   **Q2.4**: *Interpretieren Sie die den F-Test und den* $R^2$-Wert für das berechnete Modell.
+
+```{r}
+lm.vlax %>% glance()
+# Mit 62% beschreibt das Modell mit den zwei Prädiktoren und ihrer Interaktion einen großen Teil der Varianz in den Grundfrequenzmessungen.
+# Im Vergleich zu den beiden möglichen einfachen linearen Regressionen:
+lm(f0 ~ subject, data = vlax) %>% glance() %>% pull(r.squared)
+lm(f0 ~ dB, data = vlax) %>% glance() %>% pull(r.squared)
+# Des Weiteren zeigt der F-Test, dass das Modell mit zwei Prädiktoren die Daten besser 
+# beschreibt als ein Intercept-only Modell (F[3, 174] = 96.7, p < 0.001).
+```
+
+## 3. Multiple lineare Regression (2)
+
+-   **Q3.1**: *Wir wollen herausfinden, ob es einen Effekt von Versuchsperson `subject` und Vokal `vowel` auf die Energie `rms` im Data Frame `v.df` gibt. Erstellen Sie eine Abbildung der Daten und begründen Sie, weshalb Sie ein Modell mit/ohne Interaktion wählen würden.*
+
+```{r}
+ggplot(v.df) + 
+  aes(x = vowel, y = rms, fill = subject) + 
+  geom_boxplot()
+# Es sollte ein Modell mit Interaktion gewählt werden, da sich der Effekt von Versuchsperson pro Vokal unterscheidet
+# (für /a/ liegt die Energie niedriger für S68, für /i/ hingegen höher für S68).
+```
+
+-   **Q3.2**: *Berechnen Sie das Modell, das Sie in 3.1 vorgeschlagen haben, und erklären Sie, was die Schätzungen der Regressionskoeffizienten bedeuten und berichten Sie das Ergebnis der* $t$-Tests.
+
+```{r}
+lm.v <- lm(rms ~ subject * vowel, data = v.df)
+lm.v %>% tidy()
+# Für Vokal /a/ und Versuchsperson S67 liegt die geschätzte Energie bei 74.9 rms.
+# Die Slope für Versuchsperson zeigt für den Wechsel von S67 zu S68 (bei konstantem Vokal /a/) ein Sinken der Energie.
+# Die Slope für Vokal zeigt für den Wechsel von /a/ zu /i/ (bei konstanter Vpn S67) ebenfalls ein Sinken der Energie.
+# Wenn jedoch sowohl die Versuchsperson S68 ist und der Vokal /i/, dann steigt die Energie, wie man 
+# anhand der Slope für die Interaktion sehen kann. (ESTIMATE)
+# Die Slope für Versuchsperson unterscheidet sich nicht signifikant von Null. 
+# Die Slope für Vokal hingegen unterscheidet sich signifikant von Null ($t$ = 3.8, $p$ < 0.001),
+# genauso wie die Slope für die Interaktion ($t$ = 2.9, $p$ < 0.01).
+```
+
+-   **Q3.3**: *Interpretieren Sie die den F-Test und den* $R^2$-Wert für das berechnete Modell.
+
+```{r}
+lm.v %>% glance()
+# Der adjusted R^2-Wert zeigt, dass von dem berechneten linearen Modell nur 4% der Varianz 
+# in den gemessenen Energielevels beschrieben wird. Das ist ein sehr niedriger Wert.
+# Das Modell beschreibt die Daten jedoch besser als ein Mittelwertmodell ($R^2$ = 0.04, $F$[3, 292] = 5.1, $p$ < 0.01).
+```
+
+-   **Q3.4**: *Erklären Sie, unter welchen Umständen post-hoc Tests für ein Modell berechnet werden sollten. Wenn nötig, berechnen Sie die post-hoc Tests für die durchgeführte Regression und erklären Sie die Ergebnisse.*
+
+```{r}
+# post-hoc Tests sollten nur durchgeführt werden, wenn es zwei oder mehr kategoriale Variablen in 
+# einer Regression gibt und deren Interaktion signifikant ist -- das ist hier der Fall.
+emmeans(lm.v, pairwise ~ subject | vowel)
+# Es gab einen signifikanten Unterschied zwischen den Versuchspersonen für den Vokal /i/ ($t$ = 2.6, $p$ < 0.05).
+emmeans(lm.v, pairwise ~ vowel | subject)
+# Es gab einen signifikanten Unterschied zwischen den Vokalen für die Versuchsperson S67 ($t$ = 3.8, $p$ < 0.001).
+```
+
+## 4. Multiple lineare Regression (3)
+
+-   **Q4.1**: *Wir wollen herausfinden, ob es einen Effekt von linkem phonetischen Kontext `left` und Sprache `language` auf die Reaktionszeit `rt` im Data Frame `vcv` gibt. Erstellen Sie eine Abbildung der Daten und überlegen Sie, ob ein Modell mit oder ohne Interaktion hier sinnvoller wäre.*
+
+```{r}
+ggplot(vcv) + 
+  aes(x = left, y = rt, fill = language) + 
+  geom_boxplot()
+
+ggplot(vcv) + 
+  aes(x = language, y = rt, fill = left) + 
+  geom_boxplot()
+# Es sieht nicht so aus, als ob eine Interaktion zwischen den Variablen vorliegt,
+# Der Einfluss von Kontext auf Reaktionszeit ist sehr ähnlich für die beiden Sprachen;
+# oder umgekehrt: der Einfluss der Sprache auf die Reaktionszeit ist sehr ähnlich für die beiden Kontexte.
+```
+
+-   **Q4.2**: *Berechnen Sie eine multiple lineare Regression ohne Interaktion für die Fragestellung in Q4.1 und interpretieren Sie die Regressionskoeffizienten.*
+
+```{r}
+lm.vcv <- lm(rt ~ left + language, data = vcv)
+lm.vcv %>% tidy()
+
+lm.vcv %>% tidy() %>% mutate(p.value = format(p.value, scientific = F))
+# Die geschätzte Reaktionszeit für den Kontext /s/ und die Sprache AE liegt bei 615.4 ms.
+# Die Veränderung von /s/ zu /th/ bei konstanter Sprache AE bewirkt eine Verlängerung der Reaktionszeit um 32 ms.
+# Die Veränderung von Sprache AE zu D bei konstantem Kontext /s/ bewirkt eine Verlängerung der Reaktionszeit um 18.1 ms.
+```
+
+-   **Q4.3**: *Interpretieren Sie der Ergebnisse der* $t$-Tests für die Slopes in Q4.2.
+
+```{r}
+# Es gab einen signifikanten Einfluss von Kontext ($t$ = 3.2, $p$ < 0.01) auf die Reaktionszeit.
+# Die Slope für die Sprache unterschied sich nicht signifikant von Null.
+```
+
+-   **Q4.4**: *Interpretieren Sie die den F-Test und den* $R^2$-Wert -- erklären Sie dieses Mal den Unterschied zwischen $R^2$ und adjusted $R^2$.
+
+```{r}
+lm.vcv %>% glance()
+# Das gewählte Modell beschreibt die Daten laut dem F-Test besser als ein 
+# Intercept-only Modell ($R^2$ = 0.02, $F$[2, 514] = 6.8, $p$ < 0.01).
+# Insgesamt beschreibt das Modell aber mit 2.2% nur einen sehr geringen Anteil der Varianz in den
+# gemessenen Reaktionszeiten. Der adjusted $R^2$, den wir hier berichten, korrigiert den $R^2$-Wert 
+# für die Anzahl an unabhängigen Variablen, denn je mehr Prädiktoren ein Modell hat, desto höher 
+# liegt $R^2$, ohne dass zwangläufig alle Prädiktoren zur Erklärungskraft des Modells beitragen.
+```
+
+# Daten & Packages laden
+
+Laden Sie die folgenden Packages und Data Frames:
+
+```{r}
+library(tidyverse)
+library(lmerTest)
+library(emmeans)
+library(MuMIn)
+url <- "http://www.phonetik.uni-muenchen.de/~jmh/lehre/Rdf"
+df <- read.table(file.path(url, "speechRate.txt"), stringsAsFactors = T, header = T) %>% 
+  mutate(subject = factor(subject, levels = paste0("S", 1:30)),
+         word = factor(word, levels = paste0("A", 1:10))) %>%
+  as_tibble()
+```
+
+# Q & A's
+
+## 1. Vollständige statistische Analyse
+
+-   **Q1**: *In einem Experiment haben wir 30 Versuchspersonen gebeten, eine Liste von 10 Wörtern vorzulesen. Dabei haben wir die speechrate gemessen (je höher der Wert, desto langsamer die Produktion der Versuchsperson). Wir wollen herausfinden, ob die speechrate `rate` vom Alter `age` und Geschlecht `gender` der Versuchspersonen beeinflusst wurde. Erstellen Sie für diese Fragestellung eine Abbildung. Beschreiben Sie die Abbildung im Hinblick auf die Fragestellung.*
+
+```{r}
+ggplot(df) +
+  aes(x=age, y=rate, col=gender)+ 
+  geom_boxplot()
+ggplot(df) + 
+  aes(x = age, y = rate, fill = gender) +
+  geom_boxplot()
+
+# Es gibt einen deutlichen Einfluss von Alter auf die speechrate:
+# Ältere Menschen sprechen langsamer als junge Menschen -- das entspricht
+# der Erwartung. Es scheint außerdem einen Einfluss des Geschlechts zu 
+# geben, aber vermutlich nur innerhalb der älteren Versuchspersonen:
+# ältere Männer sprechen nochmal langsamer als ältere Frauen.
+# Bei jüngeren Menschen gibt es keinen deutlichen Geschlechtsunterschied
+# bezüglich der speechrate.
+# Dies impliziert, dass wir eine Interaktion zwischen Alter und Geschlecht
+# in unser statistisches Modell einbeziehen sollten.
+```
+
+-   **Q2**: *Finden Sie heraus, wie viele Datenpunkte es pro Versuchsperson gibt, pro Wort, und wie häufig jede Versuchsperson jedes Wort produziert hat.*
+
+```{r}
+
+table(df$subject)
+table(df$word)
+table(df$subject, df$word)
+```
+
+-   **Q3**: *Finden Sie mittels Abbildungen heraus, ob es einen großen speechrate-Unterschied zwischen individuellen Versuchspersonen und Wörtern gibt. Was hat das für eine Bedeutung für die Konzipierung eines statistischen Modells für die gegebenen Daten?*
+
+```{r}
+
+ggplot(df) + 
+  aes(x = subject, y = rate) + 
+  geom_boxplot()
+
+ggplot(df) + 
+  aes(x = word, y = rate) + 
+  geom_boxplot()
+
+# Sowohl zwischen einzelnen Versuchspersonen und einzelnen Wörtern gibt es
+# große Unterschiede in der speechrate. Zusätzlich wissen wir aus der Aufgabe
+# zuvor, dass die Datenpunkte nicht unabhängig voneinander sind (mehrere Datenpunkte
+# pro Sprecher, pro Wort, und pro Sprecher pro Wort). 
+# Um eine allgemeine Aussage zur Fragestellung treffen zu können, sollten wir 
+# die zufällige Variation zwischen Versuchspersonen und Wörtern mittels 
+# Random Effects herausrechnen.
+```
+
+-   **Q4**: *Entwerfen Sie die komplexeste Random Effects Struktur für die Daten und erklären Sie die einzelnen Terme.*
+
+```{r}
+# (1 | subject) + (age + gender | word)
+
+# (1 | subject): variierende sprecherspezifische Intercepts erlauben;
+# Versuchspersonen konnten nur entweder männlich oder weiblich bzw. 
+# entweder alt oder jung sein:
+table(df$subject, df$age)
+table(df$subject, df$gender)
+# deshalb kann es keine sprecherspezifischen Slopes geben.
+
+# (age + gender | word): variierende wortspezifische Intercepts und 
+# Slopes pro Alter und Geschlecht; dies ist möglich, weil es pro 
+# Wort jeweils mehrere Datenpunkte pro Level von Alter und Geschlecht gab:
+table(df$word, df$age)
+table(df$word, df$gender)
+```
+
+-   **Q5**: *Finden Sie durch eine Abbildung heraus, ob die Random Slopes für `word` gerechtfertigt sind oder ob man sie noch vereinfachen kann.*
+
+```{r}
+# Wortspezifische Random Slope für `age`?
+# Die meisten Slopes sind negativ, d.h. jüngere Sprecher prodzierten die 
+# meisten der 10 Wörter schneller als ältere Sprecher.
+# Wörter A1, A8 und A9 stechen aber heraus: Hier scheint es keinen 
+# großeren speechrate-Unterschied zwischen den jüngeren und älteren 
+# Sprechern zu geben (Slope ist ca. Null).
+# Wortspezifische Slopes für `age` sind folglich angebracht.
+ggplot(df) +
+  aes(y = rate, x = age) +
+  facet_wrap(~word) +
+  geom_point()
+ggplot(df) + 
+  aes(x = age, y = rate) + 
+  geom_point() + 
+  facet_wrap(~word, nrow = 2) + 
+  geom_point(data = df %>% 
+               group_by(word, age) %>% 
+               summarise(rate = mean(rate)),
+             color = "orange", size = 3, stroke = 2, shape = 4) + 
+  geom_line(data = df %>% 
+              group_by(word, age) %>% 
+              summarise(rate = mean(rate)),
+            mapping = aes(x = age, y = rate, group = word),
+             lty = "dashed")
+
+# Wortspezifische Random Slope für `gender`?
+# Die meisten Wörter werden ähnlich schnell von Männern wie von Frauen produziert,
+# d.h. die meisten wortspezifischen Slopes sind ca. Null.
+# A2, A5 und A10 stechen jedoch leicht heraus: Diese Wörter wurden 
+# langsamer von Männern als von Frauen produziert.
+# Wortspezifische Slopes für `gender` sind also angebracht.
+ggplot(df) + 
+  aes(x = gender, y = rate) + 
+  geom_point() + 
+  facet_wrap(~word, nrow = 2) + 
+  geom_point(data = df %>% 
+               group_by(word, gender) %>% 
+               summarise(rate = mean(rate)),
+             color = "orange", size = 3, stroke = 2, shape = 4) + 
+  geom_line(data = df %>% 
+              group_by(word, gender) %>% 
+              summarise(rate = mean(rate)),
+            mapping = aes(x = gender, y = rate, group = word),
+             lty = "dashed")
+```
+
+-   **Q6**: *Lassen Sie von `lmer()` das Mixed Model berechnen, dessen Formel Sie sich bis hierhin erarbeitet haben. Berichten Sie die Ergebnisse der t-Tests für die Fixed Effects.*
+
+```{r}
+rate.lm <- lmer(rate ~ age * gender + (1 | subject) + (age + gender | word), data = df, REML = F)
+rate.lm %>% summary(corr = F)
+
+# Eine LMER mit den Fixed Factors Alter und Gender mitsamt ihrer Interaktion, sprecherspezifische Random Intercepts 
+# und wortspezifischen Random Slopes für Alter und Gender ergab einen signifikanten Effekt von Gender auf die 
+# Speechrate (t[32.2] = 2.6, p < 0.05). Auch die Interaktion zwischen den beiden Fixed Effects hatte einen 
+# signifikanten Einfluss auf die Speechrate (t[29.0] = 2.4, p < 0.05).
+```
+
+-   **Q7**: *Wenden Sie die 68-95-99.7 Regel an, um ungefähr zu bestimmen, in welchen Speechrate-Bereichen die sprecherspezifischen Intercepts liegen müssten.*
+
+```{r}
+4.97 - 2 * 0.76   # EST.STD - 2 * STANDARD DEVIATION
+4.97 + 2 * 0.76
+# 95% der Versuchspersonen sollten eine mittlere Speechrate zwischen 3.45 und 6.49 haben.
+```
+
+-   **Q8**: *Berechnen Sie pro Sprecher den empirisch beobachteten Speechrate-Mittelwert; sortieren Sie das Ergebnis aufsteigend nach Speechrate-Mittelwert und nennen Sie den Data Frame `df_mean`.*
+
+```{r}
+df_mean <- df %>% 
+  group_by(subject) %>% 
+  summarise(m = mean(rate)) %>% 
+  arrange(m)
+df_mean
+```
+
+-   **Q9**: *Finden Sie heraus, wie viele Sprecher einen Speechrate-Mittelwert in dem oben geschätzten 95%-Intervall haben. Handelt es sich wirklich um 95% der Sprecher?*
+
+```{r}
+df_mean %>% 
+  filter(m > 3.45 & m < 6.49) %>%
+  nrow()
+
+26 / 30 * 100
+# ca. 87% der Sprecher liegen mit ihren empirisch beobachteten Speechrate-Mittelwerten im 
+# durch die sprecherspezifischen Random Slopes geschätzten 95%-Bereich.
+```
+
+-   **Q10**: *Interpretieren Sie Korrelationen `Cor` zwischen wortspezifischem Intercept und Slope für Alter bzw. Slope für Gender.*
+
+```{r}
+rate.lm
+# Die Korrelation zwischen wortspezischen Intercepts und Slopes für Alter ist stark
+# und negativ, d.h. Wörter, die von älteren Sprechern besonders langsam produziert 
+# wurden (hohes Intercept), wurden besonders schnell von jüngeren Sprechern produziert.
+# Die Korrelation zwischen wortspezifischen Intercepts und Slopes für Gender hingegen
+# ist stark und positiv, d.h. Wörter, die von Frauen langsam gesprochen wurden (hohes Intercept), 
+# wurden noch langsamer von Männern produziert.
+#ageyoung    0.7990   -0.83      
+#genderM     0.4549    0.70
+```
+
+-   **Q11**: *Berechnen Sie die pairwise comparisons mit für unser Mixed Model und berichten Sie die Ergebnisse.*
+
+```{r}
+emmeans(rate.lm, pairwise ~ age | gender)
+emmeans(rate.lm, pairwise ~ gender | age)
+
+# Pairwise Comparisons mit `emmeans` haben gezeigt, dass es einen signifikanten Unterschied
+# zwischen älteren und jüngeren männlichen Probanden (t[37.9] = 4.0, p < 0.001), 
+# aber nicht zwischen älteren und jüngeren weiblichen Probandinnen.
+
+#$contrasts
+#gender = F:
+# contrast    estimate    SE   df t.ratio p.value
+# old - young     0.57 0.543 38.4 1.050   0.3003 
+
+#gender = M:
+# contrast    estimate    SE   df t.ratio p.value
+# old - young     2.06 0.520 37.9 3.958   0.0003 
+
+
+# Zusätzlich gab es einen signifikanten Unterschied zwischen weiblichen und männlichen 
+# älteren (t[35.7] = 2.5, p < 0.05), nicht aber jüngeren Versuchspersonen.
+
+#$contrasts
+#age = old:
+# contrast estimate    SE   df t.ratio p.value
+# F - M      -1.109 0.452 35.7 -2.451  0.0193 
+#
+#age = young:
+# contrast estimate    SE   df t.ratio p.value
+# F - M       0.379 0.516 35.4  0.735  0.4672 
+```
+
+-   **Q12**: *Berechnen und interpretieren Sie R\^2 für das Mixed Model.*
+
+```{r}
+rate.lm %>% r.squaredGLMM()
+# Der marginal R^2-Wert liegt bei 0.054, d.h. nur ca. 5.4% der Varianz in den gemessenen 
+# speechrate-Werten wurde durch die Fixed Effects Alter und Gender sowie ihre Interaktion beschrieben.
+# Der conditional R^2-Wert liegt bei 0.71, d.h. ca 71% der Varianz in den speechrate-Werten
+# wurde durch Fixed Effects und Random Effects zusammen beschrieben. Das bedeutet, dass der größte 
+# Teil der Varianz, 65.6%, allein durch die Random Effects Sprecher und Wort beschrieben wird: 
+# 71 - 5.4 = 65.6
+```
+
+-   **Q13**: *Führen Sie Likelihood Ratio Tests aus, die bestimmen, ob die Fixed Factors einen signifikanten Beitrag zur Erklärungskraft der Modells beitragen. Berichten Sie die Ergebnisse.*
+
+```{r}
+rate.lm.age <- lmer(rate ~ gender + (1 | subject) + (gender | word), data = df, REML = F)
+anova(rate.lm, rate.lm.age)
+# Dieser Likelihood Ratio Tests zeigt, dass das vollständige Modell mit dem Faktor Alter 
+# bessere Parameterschätzungen erzielte als ein vergleichbares Modell ohne die 
+# Variable Alter (X^2[5] = 50.9, p < 0.001).
+# CHISQ[DF] = VALUE.
+
+rate.lm.gen <- lmer(rate ~ age + (1 | subject) + (age | word), data = df, REML = F)
+anova(rate.lm, rate.lm.gen)
+# Dieser Likelihood Ratio Tests zeigt, dass das vollständige Modell mit dem Faktor Gender 
+# bessere Parameterschätzungen erzielte als ein vergleichbares Modell ohne die 
+# Variable Gender (X^2[5] = 16.8, p < 0.01).
+```

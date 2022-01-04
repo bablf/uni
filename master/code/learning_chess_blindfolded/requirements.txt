@@ -46,7 +46,7 @@ kiwisolver==1.2.0
 knockknock==0.1.8.1
 local-attention==1.2.1
 lmdb==0.98
-lxml==4.5.2
+lxml==4.6.5
 Markdown==3.2.2
 MarkupSafe==1.1.1
 matplotlib==3.3.0

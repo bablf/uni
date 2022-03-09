@@ -77,7 +77,7 @@ Pillow @ file:///tmp/build/80754af9/pillow_1594307325547/work
 prettytable==0.7.2
 prometheus-client==0.8.0
 prompt-toolkit==3.0.5
-protobuf==3.12.2
+protobuf==3.15.0
 ptyprocess==0.6.0
 pudb==2019.2
 pyasn1==0.4.8
